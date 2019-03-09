@@ -1,5 +1,0 @@
-﻿  TCC2-SALBP2.cpp
-c:\users\joaov\documents\projetos\tcc-salbp-2\tcc2-salbp2\tcc2-salbp2\tcc2-salbp2.cpp(453): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
-c:\users\joaov\documents\projetos\tcc-salbp-2\tcc2-salbp2\tcc2-salbp2\tcc2-salbp2.cpp(464): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
-c:\users\joaov\documents\projetos\tcc-salbp-2\tcc2-salbp2\tcc2-salbp2\tcc2-salbp2.cpp(454): warning C4101: 'm': variável local não referenciada
-  TCC2-SALBP2.vcxproj -> C:\Users\joaov\Documents\Projetos\TCC-SALBP-2\TCC2-SALBP2\Debug\TCC2-SALBP2.exe
