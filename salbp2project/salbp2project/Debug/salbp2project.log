@@ -1,5 +1,6 @@
 ﻿  salbp2project.cpp
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(492): warning C4101: 'temp': variável local não referenciada
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(519): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(534): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(334): warning C4101: 'custoNovo': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(516): warning C4101: 'temp': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(516): warning C4101: 'flag': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(547): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
   salbp2project.vcxproj -> C:\Users\joaov\Documents\Projetos\salbp2\salbp2project\Debug\salbp2project.exe

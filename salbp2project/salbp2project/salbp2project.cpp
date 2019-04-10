@@ -124,7 +124,7 @@ void preProcessamento(solucao &s) {
 	}
 
 	limpaControladorFo(s);
-		
+
 }
 
 
@@ -320,36 +320,46 @@ int sortearDirecao(int idTarefa) {
 
 /*Esse metodo quando retiro uma tarefa a uma estação eu chamo ele para atualizar as varias de controle*/
 void subtrairTarefaCustoEContador(solucao &s, int idEstacao, int idtarefa) {
-	s.vetCustoEstacao[idEstacao] = s.vetCustoEstacao[idEstacao] - vetTarefa[idtarefa].custo;
-	s.vetControlaNumeroTarefa[idEstacao] = s.vetControlaNumeroTarefa[idEstacao] - 1;
-
+	int custoAtual, custoNovo, custoTarefa, controlador;
+	custoAtual = s.vetCustoEstacao[idEstacao];
+	custoTarefa = vetTarefa[idtarefa].custo;
+	custoNovo = custoAtual - custoTarefa;
+	s.vetCustoEstacao[idEstacao] = custoNovo;
+	controlador = s.vetControlaNumeroTarefa[idEstacao];
+	s.vetControlaNumeroTarefa[idEstacao] = controlador - 1;
 }
 
 /*Esse metodo quando adiciono uma tarefa a uma estação eu chamo ele para atualizar as varias de controle*/
 void somarTarefaCustoEContador(solucao &s, int idEstacao, int idtarefa) {
-	s.vetCustoEstacao[idEstacao] = s.vetCustoEstacao[idEstacao] + vetTarefa[idtarefa].custo;
-	s.vetControlaNumeroTarefa[idEstacao] = s.vetControlaNumeroTarefa[idEstacao] + 1;
+	int custoAtual, custoNovo, custoTarefa, controlador;
+	custoAtual = s.vetCustoEstacao[idEstacao];
+	custoTarefa = vetTarefa[idtarefa].custo;
+	s.vetCustoEstacao[idEstacao] = custoAtual + custoTarefa;
+	controlador = s.vetControlaNumeroTarefa[idEstacao];
+	s.vetControlaNumeroTarefa[idEstacao] = controlador + 1;
 }
 
 /*Realizo apenas um troca de posições da estação onde foi removida a tarefa*/
-void trocarPosicaoEstacaoVelha(solucao &s, int idEstacaoVelha, int idEstacaoNova, int idTarefaSorteada) {
+void trocarPosicaoEstacaoVelha(solucao &s, int idEstacaoVelha, int idTarefaSorteada) {
 	int auxTempTarefa;
-	for (int i = idTarefaSorteada; i < s.vetControlaNumeroTarefa[idEstacaoVelha]; i++) {
+	for (int i = idTarefaSorteada; i+1 < s.vetControlaNumeroTarefa[idEstacaoVelha]; i++) {
 		auxTempTarefa = s.matrizSolucao[idEstacaoVelha][i + 1];
 		s.matrizSolucao[idEstacaoVelha][i] = auxTempTarefa;
 	}
 }
 
 /*Me retorna a ultima posição inviavel de uma estação que eu posso inserir*/
-int validarPosicaoNova(solucao &s, int idEstacaoNova, int auxIdtarefa) {
+int validarPosicaoNova(solucao &s, int idEstacaoNova, int idTarefa) {
 	/*rever os maximo  e colocar em variaceis para debugar*/
+	int predecessor;
 	int ultimaPosicaoInViavel = -1;
 	int maximoTarefa = s.vetControlaNumeroTarefa[idEstacaoNova];
 	for (int i = 0; i < maximoTarefa; i++) {
 		int tarefa = s.matrizSolucao[idEstacaoNova][i];
-		int maximoPredecessor = vetTarefa[tarefa].controlaPredecessor;
+		int maximoPredecessor = vetTarefa[idTarefa].controlaPredecessor;
 		for (int j = 0; j < maximoPredecessor; j++) {
-			if (vetTarefa[tarefa].vetpredecesor[j] == vetTarefa[auxIdtarefa].id) {
+			predecessor = vetTarefa[idTarefa].vetpredecesor[j];
+			if (predecessor == tarefa) {
 				ultimaPosicaoInViavel = i;
 			}
 		}
@@ -361,27 +371,40 @@ int validarPosicaoNova(solucao &s, int idEstacaoNova, int auxIdtarefa) {
 
 /*Metodo responsavel de receber um posicao e organizar a matriz para eu inserir numa posição especifica
 é inserido na posicao + 1*/
-void trocarPosicaoEstacaoNova(solucao &s, int idEstacaoNova, int auxIdtarefa, int posicao) {
-	int auxTempTarefa;
-	for (int i = posicao; i < s.vetControlaNumeroTarefa[idEstacaoNova]; i++) {
-		auxTempTarefa = s.matrizSolucao[idEstacaoNova][i + 1];
-		s.matrizSolucao[idEstacaoNova][i + 2] = auxTempTarefa;
+void trocarPosicaoEstacaoNova(solucao &s, int idEstacaoNova, int idtarefa, int posicao) {
+	int tarefaAux, temp;
+	tarefaAux = s.matrizSolucao[idEstacaoNova][posicao];
+	s.matrizSolucao[idEstacaoNova][posicao] = idtarefa;
+	for (int i = posicao; i+1 < s.vetControlaNumeroTarefa[idEstacaoNova]; i++) {
+		temp = s.matrizSolucao[idEstacaoNova][i + 1];
+		s.matrizSolucao[idEstacaoNova][i + 1] = tarefaAux;
+		tarefaAux = temp;
 	}
-	s.matrizSolucao[idEstacaoNova][posicao + 1] = vetTarefa[auxIdtarefa].id;
+	
 }
 
 /*Esse metodo irá inserir na estação ja escolhida, irá inserir no final caso eu possa inserir em qualquer lugar
 e caso eu tenha um posicao especifica eu chamo um metodo que irá realizar essa troca de posicao*/
-void inserirTarefaEstacaoNova(solucao &s, int idEstacaoNova, int auxIdtarefa) {
-	int posicao = validarPosicaoNova(s, idEstacaoNova, auxIdtarefa);
+void inserirTarefaEstacaoNova(solucao &s, int idEstacaoNova, int idtarefa) {
+	int posicao = validarPosicaoNova(s, idEstacaoNova, idtarefa-1);
 	if (posicao == -1) {// Posso inserir em qualquer lugar, insiro na ultima posicao
-		s.matrizSolucao[idEstacaoNova][s.vetControlaNumeroTarefa[idEstacaoNova]] = vetTarefa[auxIdtarefa].id;
-		s.vetControlaNumeroTarefa[idEstacaoNova] = s.vetControlaNumeroTarefa[idEstacaoNova] + 1;
+		for (int i = 0; i < s.vetControlaNumeroTarefa[idEstacaoNova]; i++) {
+
+			if (s.matrizSolucao[idEstacaoNova][i] == idtarefa) {
+				s.matrizSolucao[idEstacaoNova][s.vetControlaNumeroTarefa[idEstacaoNova]] = -99;
+			}
+			else {
+
+				s.matrizSolucao[idEstacaoNova][s.vetControlaNumeroTarefa[idEstacaoNova]] = idtarefa;
+			}
+		}
+		
 	}
 	else {
 		/*Insiro numa posição N+1 da ultima tarefa que é seu predecessor*/
-		trocarPosicaoEstacaoNova(s, idEstacaoNova, auxIdtarefa, posicao);
+		trocarPosicaoEstacaoNova(s, idEstacaoNova, idtarefa, posicao);
 	}
+	somarTarefaCustoEContador(s, idEstacaoNova, idtarefa-1);
 
 }
 
@@ -389,20 +412,19 @@ void inserirTarefaEstacaoNova(solucao &s, int idEstacaoNova, int auxIdtarefa) {
 void inserirTarefaViavelNaEstacao(solucao &s, int idEstacaoVelha, int idEstacaoNova, int idTarefaSorteada) {
 	int auxIdtarefa;
 	if (idEstacaoNova != idEstacaoVelha) {
-		auxIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada]-1;
-		cout << "TAREFA QUE IRA SE MUDAR PARA OUTRA VIZINHO " << auxIdtarefa+1 << endl;
+		auxIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada] - 1;
+		cout << "TAREFA QUE IRA SE MUDAR PARA OUTRA VIZINHO " << auxIdtarefa + 1 << endl;
 		/*Se entrar nesse if, quer dizer que a tareda que quero mover é a ultima*/
 		if (idTarefaSorteada + 1 >= s.vetControlaNumeroTarefa[idEstacaoVelha]) {
 			subtrairTarefaCustoEContador(s, idEstacaoVelha, auxIdtarefa);
 		}
 		else {
-			trocarPosicaoEstacaoVelha(s, idEstacaoVelha, idEstacaoNova, idTarefaSorteada);
+			trocarPosicaoEstacaoVelha(s, idEstacaoVelha, idTarefaSorteada);
 			subtrairTarefaCustoEContador(s, idEstacaoVelha, auxIdtarefa);
 		}
 		/*Nesse ponto a estaçãoVelha já não possui a tarefa que foi sorteada, proximo passo é inserir a tarefa no
 		novo posto de trabalho, respeitando a viabilidade da solucao*/
-		inserirTarefaEstacaoNova(s, idEstacaoNova, auxIdtarefa);
-
+		inserirTarefaEstacaoNova(s, idEstacaoNova, s.matrizSolucao[idEstacaoVelha][idTarefaSorteada]);
 	}
 
 }
@@ -443,10 +465,10 @@ void gerarVizinhoMovimentoEsquerdaDireita(solucao &s) {
 	direcao = sortearDirecao(idEstacaoSorteada); // sorteio uma direção para para esquerda ou para direita
 	idTarefaSorteada = sortearTarefa(s, idEstacaoSorteada); // pego uma tarefa sorteada que ira sair da estação, posso pegar qualquer tarefa, desda primeira a ultima
 	zerarEstacaoInviaveis(); // zero a varivel global
-	verificarViabilidadeEstacoes(s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada]-1, s); // vejo se a estação sorteada pode receber essa tarefa, verificando se nao quebra viabilidade da solução
+	verificarViabilidadeEstacoes(s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] - 1, s); // vejo se a estação sorteada pode receber essa tarefa, verificando se nao quebra viabilidade da solução
 	idEstacaoNova = idEstacaoSorteada + direcao; // sorteio a nova estação, se direção for esquerda irá subtrair 1, se for direira irar somar 1
 	if (ultimaEstacaoInvivel != -1) { // Se for -1 posso colocar onde quiser.
-		while (idEstacaoNova < ultimaEstacaoInvivel) { // verifico o caso de eu estiver selecionado uma estação que esteja atrasr de um estação inviavel, como a linha é sequencial só posso pegar estações viaveis, por exemplo, se tenho 4 estações e a ultima inviavel é a 2, posso usar a 3 ou 4 para ser a nova estação.
+		while ((ultimaEstacaoInvivel != -1) || (idEstacaoNova < ultimaEstacaoInvivel)) { // verifico o caso de eu estiver selecionado uma estação que esteja atrasr de um estação inviavel, como a linha é sequencial só posso pegar estações viaveis, por exemplo, se tenho 4 estações e a ultima inviavel é a 2, posso usar a 3 ou 4 para ser a nova estação.
 			idEstacaoSorteada = sortearEstacaoNaoVazia(s);
 			direcao = sortearDirecao(idEstacaoSorteada);
 			idTarefaSorteada = sortearTarefa(s, idEstacaoSorteada);
@@ -464,15 +486,17 @@ void gerarVizinhoMovimentoEsquerdaDireita(solucao &s) {
 e verifico qual é aultima estação inviavel que posso adicionar a tarefa, ai sorteo uma nova estação que ira receber
 essa tarefa.*/
 void gerarVizinhoTotalmenteAleatorio(solucao &s) {
-	int idEstacaoNova,idEstacaoSorteada, idTarefaSorteada;
+	int idEstacaoNova, idEstacaoSorteada, idTarefaSorteada;
 	idEstacaoSorteada = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
 	idTarefaSorteada = sortearTarefa(s, idEstacaoSorteada); // pego uma tarefa sorteada que ira sair da estação, posso pegar qualquer tarefa, desda primeira a ultima
 	zerarEstacaoInviaveis(); // zero a varivel global
 	verificarViabilidadeEstacoes(s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] - 1, s); // vejo se a estação sorteada pode receber essa tarefa, verificando se nao quebra viabilidade da solução
 	idEstacaoNova = rand() % (MAXESTACAO);
-	while (idEstacaoNova < ultimaEstacaoInvivel) { // verifico o caso de eu estiver selecionado uma estação que esteja atrasr de um estação inviavel, como a linha é sequencial só posso pegar estações viaveis, por exemplo, se tenho 4 estações e a ultima inviavel é a 2, posso usar a 3 ou 4 para ser a nova estação.
+	while ((ultimaEstacaoInvivel != -1) || (idEstacaoNova < ultimaEstacaoInvivel)) { // verifico o caso de eu estiver selecionado uma estação que esteja atrasr de um estação inviavel, como a linha é sequencial só posso pegar estações viaveis, por exemplo, se tenho 4 estações e a ultima inviavel é a 2, posso usar a 3 ou 4 para ser a nova estação.
+		idEstacaoSorteada = sortearEstacaoNaoVazia(s);
+		idTarefaSorteada = sortearTarefa(s, idEstacaoSorteada);
 		zerarEstacaoInviaveis();
-		verificarViabilidadeEstacoes(idTarefaSorteada, s);
+		verificarViabilidadeEstacoes(s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] - 1, s);
 		idEstacaoNova = rand() % (MAXESTACAO);
 	}
 	cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
@@ -490,25 +514,17 @@ void gerarClone(solucao &s, solucao &p) {
 void MetodoMelhorMelhora(solucao &s) {
 	solucao melhor;
 	int temp, flag;
-	do {
-		flag = 0;
-		gerarClone(s, melhor);
-		for (int i = 0; i < 1; i++) {
-			for (int j = 0; j < 3; j++) {
-				gerarVizinhoMovimentoEsquerdaDireita(melhor);
-				//gerarVizinhoTotalmenteAleatorio(melhor);
-				calculaFo(melhor);
-				if (melhor.Fo < s.Fo) {
-					gerarClone(melhor, s);
-					flag = 1;
-				}
-			}
-			if (flag == 1)
-				break;
+	gerarClone(s, melhor);
+	for (int i = 0; i < 20; i++) {
+		gerarVizinhoMovimentoEsquerdaDireita(s);
+		//gerarVizinhoTotalmenteAleatorio(s);
+		calculaFo(s);
+		if (s.Fo <= melhor.Fo) {
+			gerarClone(s, melhor);
 
 		}
-		calculaFo(s);
-	} while (flag == 1);
+	}
+	calculaFo(s);
 	gerarClone(melhor, s);
 }
 
@@ -516,11 +532,10 @@ void MetodoMelhorMelhora(solucao &s) {
 
 
 int main() {
-	srand(time(NULL));
+	//srand(time(0));
 	solucao s;
 	lerDados();
 	processarPredecedente(s);
-	mostrarDados();
 	float duracao = 0;
 	clock_t si, sf;
 	si = clock();
@@ -528,10 +543,10 @@ int main() {
 	gerarConstrutivaAleatoria(s);
 	imprimirSolucao(s);
 	MetodoMelhorMelhora(s);
-	//gerarVizinhoMovimentoEsquerdaDireita(s);
-	//gerarVizinhoTotalmenteAleatorio(s);
 	sf = clock();
 	duracao = ((sf - si) / CLOCKS_PER_SEC);
+	system("cls");
+	mostrarDados();
 	imprimirSolucao(s);
 	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
 	system("pause");
