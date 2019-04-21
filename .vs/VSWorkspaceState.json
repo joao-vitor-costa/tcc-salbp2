@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\salbp2project",
-    "\\salbp2project\\salbp2project"
+    "\\salbp2project\\salbp2project",
+    "\\salbp2project\\salbp2project\\Data"
   ],
-  "SelectedNode": "\\salbp2project\\salbp2project\\salbp2project.cpp",
+  "SelectedNode": "\\salbp2project\\salbp2project\\Data\\Resultado.txt",
   "PreviewInSolutionExplorer": false
 }
