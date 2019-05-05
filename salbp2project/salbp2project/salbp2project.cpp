@@ -65,6 +65,8 @@ tarefa vetTarefa[MAXTAREFA];
 static predecedente vetPredecedente[MAXPREDECENTE];
 static int controlaNUmPrecedente; // Usada na leitura dos dados
 int ultimaEstacaoInvivel;
+int totalVizinhosSA;
+int totalVizinhosSAAceitos;
 
 
 
@@ -624,10 +626,12 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
 			else {
 				gerarVizinhoTotalmenteAleatorio(sVizinho);
 			}
+			totalVizinhosSA++;
 			delta = sVizinho.Fo - s.Fo;
 			if (delta < 0) {
 				gerarClone(sVizinho, s);
 				if (sVizinho.Fo < sMelhor.Fo) {
+					totalVizinhosSAAceitos++;
 					gerarClone(sVizinho, sMelhor);
 				}
 			}
@@ -646,12 +650,14 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
 }
 
 int main() {
-	srand(time(0));
+	//srand(time(0));
 	//Variaveis do SA
+	totalVizinhosSA = 0;
+	totalVizinhosSAAceitos = 0;
 	float alfa = 0.975;
 	float TC = 0.01;
-	int SAmax = 1000;
-	int T0 = 100;
+	int SAmax = 100;
+	int T0 = 10;
 	// Solução
 	solucao s;
 	// Lendo as entradas
@@ -694,6 +700,15 @@ int main() {
 	gravarResultado(s);
 	cout << endl;
 	cout << "Fim do Processamento do SA..." << endl;
+	cout << "Total de vizinhos gerados: " << totalVizinhosSA << endl;
+	cout << "Total de vizinhos aceitos: " << totalVizinhosSAAceitos << endl;
+	float porcentagem = (totalVizinhosSAAceitos * 100) / totalVizinhosSA;
+	cout << "Obteve uma porcentagem de: " << porcentagem << " vizinhos aceitos." << endl;
+	if (porcentagem < 0.96) {
+		float T0Porcento = (T0 * 10) / 100;
+		cout << "Ajuste T0 para aproximadamente : " << T0 + T0Porcento << endl;
+	}
+	
 	sf = clock();
 	duracao = ((sf - si) / CLOCKS_PER_SEC);
 	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
