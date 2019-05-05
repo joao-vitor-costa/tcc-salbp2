@@ -35,16 +35,9 @@ using namespace std;
 //variaveis da solucao
 #pragma warning (disable : 4996)
 #define MAXTAREFA 29
-#define MAXESTACAO 8
+#define MAXESTACAO 14
 #define MAXPREDECENTE 100000
 
-
-//Variaveis do SA
-#define A 0.975
-#define TC 0.01
-#define SAmax 1000
-float T0 = 1000;
-float tempoSA;
 
 typedef struct Tarefa {
 	int id;
@@ -155,13 +148,13 @@ void gravarInfoDadosTarefas() {
 	FILE* f = fopen("Data/infoTarefa.txt", "w");
 	if (f != NULL) {
 		fprintf(f, "\n##################################### NUMERO MAXIMO DE POSTOS #####################################\n");
-		fprintf( f,"\t\t\t\t\t\t %d", MAXESTACAO);
+		fprintf(f, "\t\t\t\t\t\t %d", MAXESTACAO);
 		fprintf(f, "\n##################################### NUMERO MAXIMO DE TAREFAS #####################################\n");
-		fprintf(f, "\t\t\t\t\t\t %d",numMaxTarefa);
+		fprintf(f, "\t\t\t\t\t\t %d", numMaxTarefa);
 		fprintf(f, "\n##################################### CUSTO DAS TAREFAS #####################################\n");
 		int custo = 0;
 		for (int i = 0; i < numMaxTarefa; i++) {
-			fprintf(f, "\t\t\t\t\t tarefa %d = %d\n",vetTarefa[i].id, vetTarefa[i].custo);
+			fprintf(f, "\t\t\t\t\t tarefa %d = %d\n", vetTarefa[i].id, vetTarefa[i].custo);
 			custo = custo + vetTarefa[i].custo;
 		}
 		fprintf(f, "\n##################################### CUSTO TOTAL: %d #####################################\n", custo);
@@ -169,7 +162,7 @@ void gravarInfoDadosTarefas() {
 		fprintf(f, "\n##################################### PREDECEDENTES #####################################\n");
 		for (int i = 0; i < numMaxTarefa; i++) {
 			for (int j = 0; j < vetTarefa[i].controlaPredecessor; j++) {
-				fprintf(f, "\t\t\t\tTarefa = %d -  Predecessor = %d \n",vetTarefa[i].id, vetTarefa[i].vetpredecesor[j]);
+				fprintf(f, "\t\t\t\tTarefa = %d -  Predecessor = %d \n", vetTarefa[i].id, vetTarefa[i].vetpredecesor[j]);
 			}
 
 
@@ -218,9 +211,9 @@ void calculaFo(solucao &s) {
 /*Metodo recebe um id da tarefa e verifica em quais estações de trabalho ela não pode entrar para
 realizar a inserção, no fim do metodo ele cria uma lista de estações inviaveis para adicionar a tarefa*/
 void verificarViabilidadeEstacoes(int idTarefa, solucao &s) {
-	cout << endl;
-	cout << endl;
-	cout << "##################################### ESTACAOS DE TRABALHO INVIAVEIS #####################################" << endl;
+	//cout << endl;
+	//cout << endl;
+	//cout << "##################################### ESTACAOS DE TRABALHO INVIAVEIS #####################################" << endl;
 	for (int k = 0; k < MAXESTACAO; k++) {
 		for (int i = 0; i < s.vetControlaNumeroTarefa[k]; i++) {
 			for (int j = 0; j < vetTarefa[idTarefa].controlaPredecessor; j++) {
@@ -231,8 +224,8 @@ void verificarViabilidadeEstacoes(int idTarefa, solucao &s) {
 			}
 		}
 	}
-	cout << "ID DA TAREFA " << idTarefa + 1 << " NAO PODE ENTRAR EM ESTACOES MENORES A " << ultimaEstacaoInvivel + 1 << endl;
-	cout << "#########################################################################################################" << endl;
+	//	cout << "ID DA TAREFA " << idTarefa + 1 << " NAO PODE ENTRAR EM ESTACOES MENORES A " << ultimaEstacaoInvivel + 1 << endl;
+	//	cout << "#########################################################################################################" << endl;
 
 }
 
@@ -242,9 +235,9 @@ int sortearEstacao() {
 
 
 int sortearAleatorioEstacaoViavel() {
-	cout << endl;
-	cout << endl;
-	cout << "##################################### SORTEANDO ESTACAO DE TRABALHO VIAVEIS ################################" << endl;
+	//cout << endl;
+	//cout << endl;
+	//cout << "##################################### SORTEANDO ESTACAO DE TRABALHO VIAVEIS ################################" << endl;
 	int idEstacao;
 	idEstacao = sortearEstacao();
 	/*O loop da idEstacao ser menor que a ultima inviavel me permite ter a possibilidade de inserir
@@ -255,8 +248,8 @@ int sortearAleatorioEstacaoViavel() {
 	}
 
 	return idEstacao;
-	cout << "ESTACAO SORTEADA: " << idEstacao + 1 << endl;
-	cout << "########################################################################################################" << endl;
+	//cout << "ESTACAO SORTEADA: " << idEstacao + 1 << endl;
+	//cout << "########################################################################################################" << endl;
 
 
 }
@@ -268,38 +261,38 @@ void zerarEstacaoInviaveis() {
 
 /*Gero um solução totalmente aleatoria, respeitando a restrição do problema*/
 void gerarConstrutivaAleatoria(solucao &s) {
-	cout << endl;
-	cout << endl;
-	cout << "##################################### INCIANDO GERACAO ALEATORIA #####################################" << endl;
+	//cout << endl;
+	//cout << endl;
+	//cout << "##################################### INCIANDO GERACAO ALEATORIA #####################################" << endl;
 	int idtarefa, idEstacao;
 	for (int i = 0; i < numMaxTarefa; i++) {
-		cout << endl;
-		cout << endl;
-		cout << "##################################### INICIO DA INSERCAO TAREFA " << i + 1 << " ##################################### " << endl;
+		//cout << endl;
+		//cout << endl;
+		//cout << "##################################### INICIO DA INSERCAO TAREFA " << i + 1 << " ##################################### " << endl;
 		idtarefa = i;
 		zerarEstacaoInviaveis();
 		verificarViabilidadeEstacoes(idtarefa, s);
 		if (ultimaEstacaoInvivel == -1) { // posso colocar em qualquer estação de trabalho
-			cout << "PARA TAREFA " << i + 1 << " NAO EXISTE NO MOMENTO POSTOS INVIAVEIS." << endl;
+			//cout << "PARA TAREFA " << i + 1 << " NAO EXISTE NO MOMENTO POSTOS INVIAVEIS." << endl;
 			idEstacao = sortearEstacao(); // Escolho uma aleatoriamente  para add a tarefa
-			cout << "TAREFA " << i + 1 << " SERA INSERIDA NO POSTO DE TRABALHO " << idEstacao + 1 << endl;
+			//cout << "TAREFA " << i + 1 << " SERA INSERIDA NO POSTO DE TRABALHO " << idEstacao + 1 << endl;
 		}
 		else {
 			idEstacao = sortearAleatorioEstacaoViavel();
-			cout << "SORTEANDO POSTO PARA INSERIR A TAREFA" << endl;
-			cout << "ATENCAO TAREFA ATUAL SO PODE ENTRAR NOS POSTO MAIORES QUE O POSTO " << ultimaEstacaoInvivel << endl;
-			cout << "POSTO DE TAREFA SORTEADO " << idEstacao + 1 << " IRA RECEBER A TAREFA " << i + 1 << endl;
+			//cout << "SORTEANDO POSTO PARA INSERIR A TAREFA" << endl;
+			//cout << "ATENCAO TAREFA ATUAL SO PODE ENTRAR NOS POSTO MAIORES QUE O POSTO " << ultimaEstacaoInvivel << endl;
+			//cout << "POSTO DE TAREFA SORTEADO " << idEstacao + 1 << " IRA RECEBER A TAREFA " << i + 1 << endl;
 		}
 		//Atribuo a tarefa a estação selecionada
 		s.matrizSolucao[idEstacao][s.vetControlaNumeroTarefa[idEstacao]] = vetTarefa[i].id;
 		s.vetControlaNumeroTarefa[idEstacao] = s.vetControlaNumeroTarefa[idEstacao] + 1;
 		s.vetCustoEstacao[idEstacao] = s.vetCustoEstacao[idEstacao] + vetTarefa[i].custo;
-		cout << "#####################################  FIM DA INSERCAO DA TAREFA " << i + 1 << " ##################################### " << endl;
+		//cout << "#####################################  FIM DA INSERCAO DA TAREFA " << i + 1 << " ##################################### " << endl;
 
 	}
 	calculaFo(s);
 	zerarEstacaoInviaveis();
-	cout << "##################################### FIM DA GERACAO ALEATORIA ##################################### " << endl;
+	//cout << "##################################### FIM DA GERACAO ALEATORIA ##################################### " << endl;
 
 }
 
@@ -479,7 +472,7 @@ void inserirTarefaViavelNaEstacao(solucao &s, int idEstacaoVelha, int idEstacaoN
 	if (idEstacaoNova != idEstacaoVelha) {
 		auxIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada] - 1; // representa o id na no vetor de tarefas
 		tempIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada]; // o dia da tarefa a nivel de leitura 1 a MAXTAREFA
-		cout << "TAREFA QUE IRA SE MUDAR PARA OUTRA VIZINHO " << auxIdtarefa + 1 << endl;
+		//cout << "TAREFA QUE IRA SE MUDAR PARA OUTRA VIZINHO " << auxIdtarefa + 1 << endl;
 		/*Se entrar nesse if, quer dizer que a tareda que quero mover é a ultima*/
 		if (idTarefaSorteada + 1 >= s.vetControlaNumeroTarefa[idEstacaoVelha]) {
 			s.matrizSolucao[idEstacaoVelha][idTarefaSorteada] = -1;
@@ -544,7 +537,7 @@ void gerarVizinhoMovimentoEsquerdaDireita(solucao &s) {
 			idEstacaoNova = idEstacaoSorteada + direcao;
 		}
 	}
-	cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
+	//cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
 	inserirTarefaViavelNaEstacao(s, idEstacaoSorteada, idEstacaoNova, idTarefaSorteada);
 }
 
@@ -566,7 +559,7 @@ void gerarVizinhoTotalmenteAleatorio(solucao &s) {
 		verificarViabilidadeEstacoes(s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] - 1, s);
 		idEstacaoNova = rand() % (MAXESTACAO);
 	}
-	cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
+	//cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
 	inserirTarefaViavelNaEstacao(s, idEstacaoSorteada, idEstacaoNova, idTarefaSorteada);
 }
 
@@ -588,15 +581,13 @@ void metodoMelhorVizinho(solucao &s) {
 	solucao melhor;
 	int temp, flag;
 	gerarClone(s, melhor);
-
 	//For externo que roda N vezes com a melhor solução atual
-	for (int idMelhor = 0; idMelhor < 100; idMelhor++) {
+	for (int idMelhor = 0; idMelhor < 1000; idMelhor++) {
 		gerarClone(melhor, s);
 		// for interno tenta pegar a melhor solução da solução X
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10000; i++) {
 
 			int geravizinho = rand() % (2);
-
 			if (geravizinho == 0) {
 				gerarVizinhoMovimentoEsquerdaDireita(s);
 			}
@@ -615,87 +606,96 @@ void metodoMelhorVizinho(solucao &s) {
 }
 
 
-/*Estrutura de do SA --- Conversar com Dayan para vê se pode ter mudanças, nçao rodei o algoritmo, só montei para DAYAN validar a logica*/
-void simulatedAnnealing(solucao &s) {
-	clock_t hi = clock();
-	float tempo = 0;
-	int interT = 0;
-	clock_t hf;
-	solucao s1;
-	solucao sVizinho;
-	float delta;
-	gerarClone(s, s1);
-	float T = T0;
-
-	while (tempo < 120) {
-
-		while (T > TC) { // clausula de parada do tempo, TC temperatura congelante
-			while (interT < SAmax) {
-				interT++;
-				gerarClone(s, sVizinho);
-
-				int geravizinho = rand() % (2);
-
-				if (geravizinho == 0) {
-					gerarVizinhoMovimentoEsquerdaDireita(sVizinho);
+void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
+	Solucao sMelhor, sVizinho;
+	int iterT = 0;
+	int T = T0;
+	int delta = 0;
+	gerarClone(s, sMelhor);
+	gerarClone(s, sMelhor);
+	while (T > TC) {
+		while (iterT < SAmax) {
+			iterT = iterT + 1;
+			// gero só viaveis
+			int geravizinho = rand() % (2);
+			if (geravizinho == 0) {
+				gerarVizinhoMovimentoEsquerdaDireita(sVizinho);
+			}
+			else {
+				gerarVizinhoTotalmenteAleatorio(sVizinho);
+			}
+			delta = sVizinho.Fo - s.Fo;
+			if (delta < 0) {
+				gerarClone(sVizinho, s);
+				if (sVizinho.Fo < sMelhor.Fo) {
+					gerarClone(sVizinho, sMelhor);
 				}
-				else {
-					gerarVizinhoTotalmenteAleatorio(sVizinho);
-				}
-				delta = sVizinho.Fo - s.Fo;
-				if (delta < 0) {
+			}
+			else {
+				float x = rand() % 1001;
+				x = x / 999;
+				if (x < exp(-delta / T)) {
 					gerarClone(sVizinho, s);
-					if (sVizinho.Fo < s1.Fo) {
-						gerarClone(sVizinho, s1);
-					}
 				}
-				else {
-					float x = rand() % (INT_MAX);
-					x = x / (INT_MAX - 1);
-					if (x < exp(-delta / T)) {
-						gerarClone(sVizinho, s);
-					}
-				}
-
-			}
-			hf = clock();
-			tempo = (hf - hi) / CLOCKS_PER_SEC;
-			interT = 0;
-
-			T = T * A;
-			if (tempo > 120) {
-				break;
-			}
+			}	
 		}
-		T = T0;
+		T = alfa * T;
+		iterT = 0;
 	}
-	hf = clock();
-	tempoSA = (hf - hi) / CLOCKS_PER_SEC;
+	gerarClone(sMelhor, s);
 }
-
-
-
-
 
 int main() {
 	srand(time(0));
+	//Variaveis do SA
+	float alfa = 0.975;
+	float TC = 0.01;
+	int SAmax = 1000;
+	int T0 = 100;
+	// Solução
 	solucao s;
+	// Lendo as entradas
 	lerDados();
+	// Processa a entrada
 	processarPredecedente(s);
+	// Normaliza as soluções para serem geradas
+	sanitizarMatrizSolucao(s);
+	//Imprimi no console informações das tarefas
+	infoDadosTarefas();
+	//Grava em txt informações das tarefas
+	gravarInfoDadosTarefas();
+	// variaveis de tempo
 	float duracao = 0;
 	clock_t si, sf;
 	si = clock();
-	sanitizarMatrizSolucao(s);
+	cout << "Processando da Geracao Aleatoria..." << endl;
+	cout << endl;
+	cout << " ################## SOLUCAO ALETORIA ###################" << endl;
 	gerarConstrutivaAleatoria(s);
 	imprimirSolucao(s);
+	gravarResultado(s);
+	cout << endl;
+	cout << "Fim do Processando da Geracao Aleatoria..." << endl;
+	cout << endl;
+	/*cout << "Processando Refinamento..." << endl;
+	cout << endl;
 	metodoMelhorVizinho(s);
+	cout << " ################## SOLUCAO DO REFINAMENTO ###################" << endl;
+	imprimirSolucao(s);
+	gravarResultado(s);
+	cout << endl;
+	cout << " Fim do processando Refinamento..." << endl;*/
+	cout << endl;
+	cout << "Processando SA..." << endl;
+	cout << endl;
+	simulatedAnnealing(s, alfa, TC, SAmax, T0);
+	cout << " ################## SOLUCAO DO SA ###################" << endl;
+	imprimirSolucao(s);
+	gravarResultado(s);
+	cout << endl;
+	cout << "Fim do Processamento do SA..." << endl;
 	sf = clock();
 	duracao = ((sf - si) / CLOCKS_PER_SEC);
-	system("cls");
-	infoDadosTarefas();
-	imprimirSolucao(s);	
-	gravarInfoDadosTarefas();
-	gravarResultado(s);
 	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
 	system("pause");
 	return 0;
