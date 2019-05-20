@@ -614,7 +614,7 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
 	int T = T0;
 	int delta = 0;
 	gerarClone(s, sMelhor);
-	gerarClone(s, sMelhor);
+	gerarClone(s, sVizinho);
 	while (T > TC) {
 		while (iterT < SAmax) {
 			iterT = iterT + 1;
@@ -650,14 +650,14 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
 }
 
 int main() {
-	//srand(time(0));
+	srand(time(0));
 	//Variaveis do SA
 	totalVizinhosSA = 0;
 	totalVizinhosSAAceitos = 0;
 	float alfa = 0.975;
 	float TC = 0.01;
-	int SAmax = 100;
-	int T0 = 10;
+	int SAmax = 20000;
+	int T0 = 500000;
 	// Solução
 	solucao s;
 	// Lendo as entradas
@@ -703,10 +703,10 @@ int main() {
 	cout << "Total de vizinhos gerados: " << totalVizinhosSA << endl;
 	cout << "Total de vizinhos aceitos: " << totalVizinhosSAAceitos << endl;
 	float porcentagem = (totalVizinhosSAAceitos * 100) / totalVizinhosSA;
-	cout << "Obteve uma porcentagem de: " << porcentagem << " vizinhos aceitos." << endl;
+	cout << "Obteve uma porcentagem de " << porcentagem << " vizinhos aceitos." << endl;
 	if (porcentagem < 0.96) {
 		float T0Porcento = (T0 * 10) / 100;
-		cout << "Ajuste T0 para aproximadamente : " << T0 + T0Porcento << endl;
+		cout << "Ajuste T0 para mais : " << T0Porcento << endl;
 	}
 	
 	sf = clock();
