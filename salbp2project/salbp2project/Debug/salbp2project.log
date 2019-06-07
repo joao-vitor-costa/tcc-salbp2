@@ -1,15 +1,19 @@
 ﻿  salbp2project.cpp
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(341): warning C4474: 'fprintf': excesso de argumentos transmitidos para cadeia de caracteres de formato
-  c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(341): note: espaços reservados e seus parâmetros esperam 0 argumentos variadic, mas 1 foram fornecidos
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(403): warning C4101: 'custoNovo': variável local não referenciada
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(584): warning C4101: 'temp': variável local não referenciada
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(584): warning C4101: 'flag': variável local não referenciada
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(639): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(646): warning C4244: '=': conversão de 'float' para 'int', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(653): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(657): warning C4305: 'inicializando': truncamento de 'double' para 'float'
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(658): warning C4305: 'inicializando': truncamento de 'double' para 'float'
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(705): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(708): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(713): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(434): warning C4474: 'fprintf': excesso de argumentos transmitidos para cadeia de caracteres de formato
+  c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(434): note: espaços reservados e seus parâmetros esperam 0 argumentos variadic, mas 1 foram fornecidos
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(504): warning C4101: 'custoNovo': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(725): warning C4101: 'temp': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(725): warning C4101: 'flag': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(757): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(781): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(796): warning C4244: '=': conversão de 'float' para 'int', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(797): warning C4244: 'return': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(835): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(851): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(857): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(859): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(865): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(866): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(914): warning C4244: 'argumento': conversão de 'float' para 'int', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(932): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
   salbp2project.vcxproj -> C:\Users\joaov\Documents\Projetos\salbp2\salbp2project\Debug\salbp2project.exe

@@ -8,7 +8,7 @@
 Nome: João Vitor Almeida Costa
 Discente em Sistemas de Informação
 Orientador: Dayan de Castro Bissoli
-Atualizado em: 25/03/2019
+Atualizado em: 07/06/2019
 
 Descrição: Desenvolver uma meta-heurística
 para resolver o problema de balanceamento de
@@ -37,6 +37,10 @@ using namespace std;
 #define MAXTAREFA 29
 #define MAXESTACAO 14
 #define MAXPREDECENTE 100000
+#define PENALIZACAO 200 // Custo total de todas as tarefas
+#define MAXMBL 1000
+#define MAXGERACAO 300
+
 
 
 typedef struct Tarefa {
@@ -56,6 +60,7 @@ typedef struct Solucao {
 	int vetControlaNumeroTarefa[MAXESTACAO]; // Cada posição do vetor será o id -1 da estação para controle
 	int vetCustoEstacao[MAXESTACAO]; // Cada posição do vetor será o id -1 da estação para controle
 	int Fo;
+	int viavel; // 1 - Viavel - 0 inviavel
 }solucao;
 
 
@@ -198,6 +203,84 @@ void infoDadosTarefas() {
 	}
 }
 
+void ordenarPosto(solucao &s, int posto) {
+	for (int i = 0; i < s.vetControlaNumeroTarefa[posto]; i++) {
+		int max = vetTarefa[s.matrizSolucao[posto][i] - 1].controlaPredecessor;
+		for (int k = 0; k < max; k++) {
+			for (int j = 0; j < s.vetControlaNumeroTarefa[posto]; j++) {
+				int idPredecessor = vetTarefa[s.matrizSolucao[posto][i] - 1].vetpredecesor[k];
+				int tarefa = s.matrizSolucao[posto][j];
+				if (tarefa == idPredecessor) {
+					if (j > i) {
+						int aux = s.matrizSolucao[posto][j];
+						s.matrizSolucao[posto][j] = s.matrizSolucao[posto][i];
+						s.matrizSolucao[posto][i] = aux;
+					}
+				}
+			}
+		}
+	}
+
+}
+// Ordenar os postos de trabalhos que não quebram a viabilidade porem fica desordenado os postos
+void ordenaSolucao(solucao &s) {
+	int viabilidade = 1;
+	for (int k = 0; k < MAXESTACAO; k++) {
+		for (int i = 0; i < s.vetControlaNumeroTarefa[k]; i++) {
+			int idtarefaObservada = s.matrizSolucao[k][i];
+			int max = vetTarefa[s.matrizSolucao[k][i] - 1].controlaPredecessor;
+			for (int j = 0; j < max; j++) {
+				for (int e = 0; e < MAXESTACAO; e++) {
+					for (int t = 0; t < s.vetControlaNumeroTarefa[e]; t++) {
+						int idtarefa = s.matrizSolucao[e][t];
+						int idPredecessor = vetTarefa[s.matrizSolucao[k][i] - 1].vetpredecesor[j];
+						if (idPredecessor == idtarefa) {
+							// situacao onde esta no mesmo posto o predecessor, porem ficou a tarefa ficou antes dele, a tarefa é ordenada
+							if (t == k) {
+								ordenarPosto(s, k);
+							}
+						}
+
+					}
+				}
+			}
+
+
+
+		}
+	}
+}
+
+void validaSolucao(solucao &s) {
+	s.viavel = 1;
+	for (int i = 0; i < MAXESTACAO; i++) {
+		for (int j = 0; j < s.vetControlaNumeroTarefa[i]; j++) {
+			int tarefaObservadora = s.matrizSolucao[i][j];
+			int idVetTarefas = tarefaObservadora - 1;
+			int maxPredecessor = vetTarefa[idVetTarefas].controlaPredecessor;
+			for (int p = 0; p < maxPredecessor; p++) {
+				int predecessorObservado = vetTarefa[idVetTarefas].vetpredecesor[p];
+				for (int c = 0; c < MAXESTACAO; c++) {
+					for (int l = 0; s.vetControlaNumeroTarefa[l]; l++) {
+						int tarefaObservada = s.matrizSolucao[c][l];
+						if (predecessorObservado == tarefaObservada) {
+							if (l > i) {
+								s.viavel = 0;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void penalizaSolucao(solucao &s) {
+	if (s.viavel == 0) {
+		s.Fo = s.Fo + PENALIZACAO;
+	}
+}
 
 /*calculo do tempo de ciclo entre as estações de trabalho*/
 void calculaFo(solucao &s) {
@@ -206,9 +289,13 @@ void calculaFo(solucao &s) {
 		if (s.Fo < s.vetCustoEstacao[i]) {
 			s.Fo = s.vetCustoEstacao[i];
 		}
-
 	}
+
+	validaSolucao(s);
+	penalizaSolucao(s);
 }
+
+
 
 /*Metodo recebe um id da tarefa e verifica em quais estações de trabalho ela não pode entrar para
 realizar a inserção, no fim do metodo ele cria uma lista de estações inviaveis para adicionar a tarefa*/
@@ -322,6 +409,12 @@ void imprimirSolucao(solucao &s) {
 	cout << endl;
 	cout << endl;
 	cout << "FO = " << s.Fo << endl;
+	if (s.viavel == 1) {
+		cout << "SOLUCAO VIAVEL" << endl;
+	}
+	else {
+		cout << "SOLUCAO INVIAVEL" << endl;
+	}
 	cout << endl;
 
 }
@@ -353,6 +446,14 @@ void gravarResultado(solucao &s) {
 		fprintf(f, "\n");
 		fprintf(f, "\n");
 		fprintf(f, "FO = %d", s.Fo);
+		fprintf(f, "\n");
+		if (s.viavel == 1) {
+			fprintf(f, "SOLUÇÃO VIAVEL");
+		}
+		else {
+			fprintf(f, "SOLUÇÃO INVIAVEL");
+		}
+		fprintf(f, "\n");
 		fprintf(f, "\n");
 		fclose(f);
 	}
@@ -521,7 +622,7 @@ que a ultima estação inviavel, caso for quer dizer que estou deixando a soluç
 então com um loop gero novamente os valores até que eu insira de forma que não quebre
 a viabilidade das taredas
 */
-void gerarVizinhoMovimentoEsquerdaDireita(solucao &s) {
+void gerarVizinhoMovimentoEsquerdaDireitaViavel(solucao &s) {
 	int idEstacaoNova, direcao, idEstacaoSorteada, idTarefaSorteada;
 	idEstacaoSorteada = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
 	direcao = sortearDirecao(idEstacaoSorteada); // sorteio uma direção para para esquerda ou para direita
@@ -541,13 +642,14 @@ void gerarVizinhoMovimentoEsquerdaDireita(solucao &s) {
 	}
 	//cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
 	inserirTarefaViavelNaEstacao(s, idEstacaoSorteada, idEstacaoNova, idTarefaSorteada);
+	calculaFo(s);
 }
 
 
 /*Metodo totalmente aleatorio, escolho uma estação aleatoriamente, escolho uma tarefa aleatoria dessa estação,
 e verifico qual é aultima estação inviavel que posso adicionar a tarefa, ai sorteo uma nova estação que ira receber
 essa tarefa.*/
-void gerarVizinhoTotalmenteAleatorio(solucao &s) {
+void gerarVizinhoTotalmenteAleatorioViavel(solucao &s) {
 	int idEstacaoNova, idEstacaoSorteada, idTarefaSorteada;
 	idEstacaoSorteada = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
 	idTarefaSorteada = sortearTarefa(s, idEstacaoSorteada); // pego uma tarefa sorteada que ira sair da estação, posso pegar qualquer tarefa, desda primeira a ultima
@@ -563,6 +665,45 @@ void gerarVizinhoTotalmenteAleatorio(solucao &s) {
 	}
 	//cout << "A TAREFA " << s.matrizSolucao[idEstacaoSorteada][idTarefaSorteada] << " NA ESTACAO " << idEstacaoSorteada + 1 << " VAI SE MUDAR PARA ESTACAO " << idEstacaoNova + 1 << endl;
 	inserirTarefaViavelNaEstacao(s, idEstacaoSorteada, idEstacaoNova, idTarefaSorteada);
+	calculaFo(s);
+}
+
+
+/*Metodo totalmente aleatorio, escolho uma estação aleatoriamente, escolho uma tarefa aleatoria dessa estação,
+ e pego uma estação aleatoria para essa nova tarefa, esse metodo pode gerar vizinhos viaveis e inviaveis*/
+void gerarVizinhoAleatorio(solucao &s) {
+	int idEstacaoNova, idEstacaoVelha, idTarefaSorteada, auxIdtarefa, tempIdtarefa;;
+
+	idEstacaoNova = rand() % (MAXESTACAO);
+	idEstacaoVelha = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
+	while (idEstacaoNova == idEstacaoVelha) {
+		idEstacaoVelha = sortearEstacaoNaoVazia(s);
+	}
+	idTarefaSorteada = sortearTarefa(s, idEstacaoVelha);
+
+	auxIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada] - 1; // representa o id na no vetor de tarefas
+	tempIdtarefa = s.matrizSolucao[idEstacaoVelha][idTarefaSorteada]; // o id da tarefa a nivel de leitura 1 a MAXTAREFA
+
+	/*Se entrar nesse if, quer dizer que a tareda que quero mover é a ultima*/
+	if (idTarefaSorteada + 1 >= s.vetControlaNumeroTarefa[idEstacaoVelha]) {
+		s.matrizSolucao[idEstacaoVelha][idTarefaSorteada] = -1;
+		subtrairTarefaCustoEContador(s, idEstacaoVelha, auxIdtarefa);
+	}
+	else {
+		int auxTempTarefa;
+		for (int i = idTarefaSorteada; i + 1 < s.vetControlaNumeroTarefa[idEstacaoVelha]; i++) {
+			auxTempTarefa = s.matrizSolucao[idEstacaoVelha][i + 1];
+			s.matrizSolucao[idEstacaoVelha][i] = auxTempTarefa;
+		}
+		s.matrizSolucao[idEstacaoVelha][s.vetControlaNumeroTarefa[idEstacaoVelha]] = -1;
+		subtrairTarefaCustoEContador(s, idEstacaoVelha, auxIdtarefa);
+	}
+	/*Nesse ponto a estaçãoVelha já não possui a tarefa que foi sorteada, proximo passo é inserir a tarefa no
+	novo posto de trabalho*/
+
+	s.matrizSolucao[idEstacaoNova][s.vetControlaNumeroTarefa[idEstacaoNova]] = tempIdtarefa;
+	somarTarefaCustoEContador(s, idEstacaoNova, auxIdtarefa);
+	calculaFo(s);
 }
 
 
@@ -579,59 +720,114 @@ estação e vê se vai mudar a tarefa selecionada, para maquina de traz(esquerda
 vizinho do gerarVizinhoTotalmenteAleatorio, manda uma tarefa aletoriamente para uma estação viavel, onde possa receber ela. A geração
 de vizinhos respeita a regra de predecedencia das estações, logo só gero vizinhos validos e viaveis.
 */
-void metodoMelhorVizinho(solucao &s) {
+void metodoBuscaLocal(solucao &s) {
 	solucao melhor;
 	int temp, flag;
 	gerarClone(s, melhor);
 	//For externo que roda N vezes com a melhor solução atual
-	for (int idMelhor = 0; idMelhor < 1000; idMelhor++) {
+	for (int idMelhor = 0; idMelhor < MAXMBL; idMelhor++) {
 		gerarClone(melhor, s);
 		// for interno tenta pegar a melhor solução da solução X
-		for (int i = 0; i < 10000; i++) {
-
+		for (int i = 0; i < MAXGERACAO; i++) {
 			int geravizinho = rand() % (2);
-			if (geravizinho == 0) {
-				gerarVizinhoMovimentoEsquerdaDireita(s);
+
+			switch (geravizinho) {
+			case 0:
+				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
+			case 1:
+				gerarVizinhoAleatorio(s);
+			case 2:
+				gerarVizinhoTotalmenteAleatorioViavel(s);
+
 			}
-			else {
-				gerarVizinhoTotalmenteAleatorio(s);
-			}
-			calculaFo(s);
+
 			if (s.Fo <= melhor.Fo) {
 				gerarClone(s, melhor);
 
 			}
+
 		}
 	}
 	calculaFo(s);
 	gerarClone(melhor, s);
 }
 
+float temperaturaInicial(solucao &s, float beta, float gama, int SAmax, int T0) {
+	Solucao sVizinho;
+	float T = T0; // Temperatura Corrente
+	int delta = 0;
+	int condicao = 0;
+	int iterT = 0;
+	gerarClone(s, sVizinho);
+	float duracao = 0;
+	while (condicao == 0) {
+		int aceitos = 0; // Número de vizinhos aceitos na temperatura T
+		for (int i = 0; i < SAmax; i++) {
+			int geravizinho = rand() % (2);
+			switch (geravizinho) {
+			case 0:
+				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
+			case 1:
+				gerarVizinhoAleatorio(s);
+			case 2:
+				gerarVizinhoTotalmenteAleatorioViavel(s);
 
-void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
+			}
+			delta = sVizinho.Fo - s.Fo;
+			if (delta < 0) {
+				aceitos = aceitos + 1;
+			}
+			else {
+				float x = rand() % 1001;
+				x = x / 999;
+				if (x < exp(-delta / T)) {
+					aceitos = aceitos + 1;
+				}
+			}
+		}
+
+		if (aceitos >= gama * SAmax) {
+			condicao = 1;
+		}
+		else {
+			T = T * beta;
+		}
+	}
+	T0 = T;
+	return T0;
+}
+
+
+
+void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
 	Solucao sMelhor, sVizinho;
 	int iterT = 0;
-	int T = T0;
+	float T = T0;
 	int delta = 0;
 	gerarClone(s, sMelhor);
 	gerarClone(s, sVizinho);
+	float duracao = 0;
+	clock_t si, sf;
+	si = clock();
 	while (T > TC) {
 		while (iterT < SAmax) {
 			iterT = iterT + 1;
-			// gero só viaveis
 			int geravizinho = rand() % (2);
-			if (geravizinho == 0) {
-				gerarVizinhoMovimentoEsquerdaDireita(sVizinho);
+			switch (geravizinho) {
+			case 0:
+				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
+			case 1:
+				gerarVizinhoAleatorio(s);
+			case 2:
+				gerarVizinhoTotalmenteAleatorioViavel(s);
+
 			}
-			else {
-				gerarVizinhoTotalmenteAleatorio(sVizinho);
-			}
-			totalVizinhosSA++;
 			delta = sVizinho.Fo - s.Fo;
 			if (delta < 0) {
 				gerarClone(sVizinho, s);
-				if (sVizinho.Fo < sMelhor.Fo) {
-					totalVizinhosSAAceitos++;
+				if (sVizinho.Fo < sMelhor.Fo)
+					// gero só viaveis
+					metodoBuscaLocal(sVizinho); {
 					gerarClone(sVizinho, sMelhor);
 				}
 			}
@@ -641,25 +837,35 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, int T0) {
 				if (x < exp(-delta / T)) {
 					gerarClone(sVizinho, s);
 				}
-			}	
+			}
 		}
 		T = alfa * T;
 		iterT = 0;
+
+		sf = clock();
 	}
 	gerarClone(sMelhor, s);
 }
 
 int main() {
 	srand(time(0));
-	//Variaveis do SA
-	totalVizinhosSA = 0;
-	totalVizinhosSAAceitos = 0;
-	float alfa = 0.975;
-	float TC = 0.01;
-	int SAmax = 20000;
-	int T0 = 500000;
+
 	// Solução
 	solucao s;
+	//Variaveis do SA
+	// alfa = 0.975; 
+	float alfa = 0.995;
+	//float TC = 0.01; 
+	float TC = 0.001;
+	int SAmax = 1000;
+	float T0 = 2; // Temperatura inicial T0 nao calibrada
+
+
+	//variaveis para calibrar T0
+	float beta = 1.1; // Taxa de aumento da temperatura T0
+	float gama = 0.95; // taxa mínima de aceitação de soluções vizinhas em porcentagem
+
+
 	// Lendo as entradas
 	lerDados();
 	// Processa a entrada
@@ -674,41 +880,54 @@ int main() {
 	float duracao = 0;
 	clock_t si, sf;
 	si = clock();
+
+
 	cout << "Processando da Geracao Aleatoria..." << endl;
 	cout << endl;
 	cout << " ################## SOLUCAO ALETORIA ###################" << endl;
 	gerarConstrutivaAleatoria(s);
+	ordenaSolucao(s);
 	imprimirSolucao(s);
 	gravarResultado(s);
 	cout << endl;
 	cout << "Fim do Processando da Geracao Aleatoria..." << endl;
 	cout << endl;
-	/*cout << "Processando Refinamento..." << endl;
+
+	/*
+	cout << "Processando Refinamento..." << endl;
 	cout << endl;
-	metodoMelhorVizinho(s);
+	metodoBuscaLocal(s);
 	cout << " ################## SOLUCAO DO REFINAMENTO ###################" << endl;
+	ordenaSolucao(s);
 	imprimirSolucao(s);
 	gravarResultado(s);
 	cout << endl;
-	cout << " Fim do processando Refinamento..." << endl;*/
+	cout << " Fim do processando Refinamento..." << endl;
 	cout << endl;
-	cout << "Processando SA..." << endl;
-	cout << endl;
-	simulatedAnnealing(s, alfa, TC, SAmax, T0);
-	cout << " ################## SOLUCAO DO SA ###################" << endl;
-	imprimirSolucao(s);
-	gravarResultado(s);
-	cout << endl;
-	cout << "Fim do Processamento do SA..." << endl;
-	cout << "Total de vizinhos gerados: " << totalVizinhosSA << endl;
-	cout << "Total de vizinhos aceitos: " << totalVizinhosSAAceitos << endl;
-	float porcentagem = (totalVizinhosSAAceitos * 100) / totalVizinhosSA;
-	cout << "Obteve uma porcentagem de " << porcentagem << " vizinhos aceitos." << endl;
-	if (porcentagem < 0.96) {
-		float T0Porcento = (T0 * 10) / 100;
-		cout << "Ajuste T0 para mais : " << T0Porcento << endl;
-	}
+
+	  */
+
 	
+
+   cout << "Calibrando T0 ..." << endl;
+   cout << endl;
+   T0 = temperaturaInicial(s, beta, gama, SAmax, T0);
+   cout << "T0 = " << T0 << endl;
+   cout << endl;
+
+	 
+
+
+	// /*
+   cout << "Processando SA..." << endl;
+   cout << endl;
+   simulatedAnnealing(s, alfa, TC, SAmax, T0);
+   cout << " ################## SOLUCAO DO SA ###################" << endl;
+   imprimirSolucao(s);
+   gravarResultado(s);
+   cout << endl;
+   cout << "Fim do Processamento do SA..." << endl;
+	//*/
 	sf = clock();
 	duracao = ((sf - si) / CLOCKS_PER_SEC);
 	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
