@@ -36,10 +36,10 @@ using namespace std;
 #pragma warning (disable : 4996)
 #define MAXTAREFA 29
 #define MAXESTACAO 14
-#define MAXPREDECENTE 100000
-#define PENALIZACAO 200 // Custo total de todas as tarefas
-#define MAXMBL 1000
-#define MAXGERACAO 300
+#define MAXPREDECENTE 29
+#define MAXMBL 5000
+#define MAXGERACAO 1000
+#define PENALIZACAO 500
 
 
 
@@ -61,6 +61,7 @@ typedef struct Solucao {
 	int vetCustoEstacao[MAXESTACAO]; // Cada posição do vetor será o id -1 da estação para controle
 	int Fo;
 	int viavel; // 1 - Viavel - 0 inviavel
+	int estacaoMaiorCusto; // guardo o id da estação que tem maior  tempo de ciclo
 }solucao;
 
 
@@ -72,8 +73,7 @@ static int controlaNUmPrecedente; // Usada na leitura dos dados
 int ultimaEstacaoInvivel;
 int totalVizinhosSA;
 int totalVizinhosSAAceitos;
-
-
+int penalizacao = 0;
 
 /* Esse metodo ler as entradas e armazana nas estruturas criadas.*/
 void lerDados() {
@@ -236,7 +236,7 @@ void ordenaSolucao(solucao &s) {
 						int idPredecessor = vetTarefa[s.matrizSolucao[k][i] - 1].vetpredecesor[j];
 						if (idPredecessor == idtarefa) {
 							// situacao onde esta no mesmo posto o predecessor, porem ficou a tarefa ficou antes dele, a tarefa é ordenada
-							if (t == k) {
+							if (e == k) {
 								ordenarPosto(s, k);
 							}
 						}
@@ -261,10 +261,10 @@ void validaSolucao(solucao &s) {
 			for (int p = 0; p < maxPredecessor; p++) {
 				int predecessorObservado = vetTarefa[idVetTarefas].vetpredecesor[p];
 				for (int c = 0; c < MAXESTACAO; c++) {
-					for (int l = 0; s.vetControlaNumeroTarefa[l]; l++) {
+					for (int l = 0; l < s.vetControlaNumeroTarefa[c]; l++) {
 						int tarefaObservada = s.matrizSolucao[c][l];
 						if (predecessorObservado == tarefaObservada) {
-							if (l > i) {
+							if (c > i) {
 								s.viavel = 0;
 								break;
 							}
@@ -275,6 +275,7 @@ void validaSolucao(solucao &s) {
 		}
 	}
 }
+
 
 void penalizaSolucao(solucao &s) {
 	if (s.viavel == 0) {
@@ -288,6 +289,7 @@ void calculaFo(solucao &s) {
 	for (int i = 0; i < MAXESTACAO; i++) {
 		if (s.Fo < s.vetCustoEstacao[i]) {
 			s.Fo = s.vetCustoEstacao[i];
+			s.estacaoMaiorCusto = i;
 		}
 	}
 
@@ -349,7 +351,7 @@ void zerarEstacaoInviaveis() {
 }
 
 /*Gero um solução totalmente aleatoria, respeitando a restrição do problema*/
-void gerarConstrutivaAleatoria(solucao &s) {
+void gerarConstrutivaAleatoriaViavel(solucao &s) {
 	//cout << endl;
 	//cout << endl;
 	//cout << "##################################### INCIANDO GERACAO ALEATORIA #####################################" << endl;
@@ -384,6 +386,20 @@ void gerarConstrutivaAleatoria(solucao &s) {
 	//cout << "##################################### FIM DA GERACAO ALEATORIA ##################################### " << endl;
 
 }
+
+void gerarConstrutivaAleatoria(solucao &s) {
+	int idEstacao;
+	for (int i = 0; i < numMaxTarefa; i++) {
+		idEstacao = sortearEstacao();
+		s.matrizSolucao[idEstacao][s.vetControlaNumeroTarefa[idEstacao]] = vetTarefa[i].id;
+		s.vetControlaNumeroTarefa[idEstacao] = s.vetControlaNumeroTarefa[idEstacao] + 1;
+		s.vetCustoEstacao[idEstacao] = s.vetCustoEstacao[idEstacao] + vetTarefa[i].custo;
+	}
+	calculaFo(s);
+
+}
+
+
 
 
 
@@ -614,14 +630,7 @@ int sortearTarefa(solucao &s, int idEstacaoSorteada) {
 
 
 
-/*
-O metodo gerarVizinhoMovimentoEsquerdaDireita ele irá sortear uma direção para qual irá movimentar
-a tarefa, podendo levar a tarefa para estação N-1 ou N+1, para validar a inserção verifico qual é
-ultima estação inviavel que poss inserir a tarefa sorteada e vejo se a estação N-1 ou N+1 é menor
-que a ultima estação inviavel, caso for quer dizer que estou deixando a solução inviavel
-então com um loop gero novamente os valores até que eu insira de forma que não quebre
-a viabilidade das taredas
-*/
+/*Realizado testes e não gerou bons resultados - NAO USAR*/
 void gerarVizinhoMovimentoEsquerdaDireitaViavel(solucao &s) {
 	int idEstacaoNova, direcao, idEstacaoSorteada, idTarefaSorteada;
 	idEstacaoSorteada = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
@@ -646,9 +655,7 @@ void gerarVizinhoMovimentoEsquerdaDireitaViavel(solucao &s) {
 }
 
 
-/*Metodo totalmente aleatorio, escolho uma estação aleatoriamente, escolho uma tarefa aleatoria dessa estação,
-e verifico qual é aultima estação inviavel que posso adicionar a tarefa, ai sorteo uma nova estação que ira receber
-essa tarefa.*/
+/*Realizado testes e não gerou bons resultados - NAO USAR*/
 void gerarVizinhoTotalmenteAleatorioViavel(solucao &s) {
 	int idEstacaoNova, idEstacaoSorteada, idTarefaSorteada;
 	idEstacaoSorteada = sortearEstacaoNaoVazia(s); // sorteio uma estação de trabalho
@@ -713,14 +720,87 @@ void gerarClone(solucao &s, solucao &p) {
 	memcpy(&p, &s, sizeof(s));
 }
 
-/*Pego uma solução S e pego o melhor vizinho dos seus N vizinhos, ese metedo repeti esse procidemento pegando a
-melhor solução que achei no for de dentro e repete o processo, até eu sair com o melhor vizinho. Dentro do metodo
-possuo duas gerações de vizinhaça que chama uma ou outra aleatoriamente, a soloção gerarVizinhoMovimentoEsquerdaDireita pega uma
-estação e vê se vai mudar a tarefa selecionada, para maquina de traz(esquerda) ou para maquina da frente(direita). Já  a geração de
-vizinho do gerarVizinhoTotalmenteAleatorio, manda uma tarefa aletoriamente para uma estação viavel, onde possa receber ela. A geração
-de vizinhos respeita a regra de predecedencia das estações, logo só gero vizinhos validos e viaveis.
-*/
-void metodoBuscaLocal(solucao &s) {
+/*Retorna o id da tarefa que possui a tarefa como predecedente*/
+int retornaEstacaoDisponivel(int idTarefa, solucao &s) {
+	int id;
+	int tarefa = numMaxTarefa;
+	for (int i = 0; i < numMaxTarefa; i++) {
+		for (int j = 0; j < vetTarefa[i].controlaPredecessor; j++) {
+			if (vetTarefa[i].vetpredecesor[j] == idTarefa) {
+				id = vetTarefa[i].id;
+				if (id <= tarefa) {
+					tarefa = id;
+				}
+			}
+		}
+	}
+	int retorno;
+	for (int i = 0; i < MAXESTACAO; i++) {
+		for (int j = 0; j < MAXTAREFA; j++) {
+			if (s.matrizSolucao[i][j] == tarefa) {
+				retorno = i;
+			}
+		}
+
+	}
+	return retorno;
+}
+
+
+void movimentoGuloso(solucao &s) {
+	Solucao melhor;
+	gerarClone(s, melhor);
+	int custo = 0;
+	int idtarefa;
+	int parada = 0;
+
+	int id = rand() % (melhor.vetControlaNumeroTarefa[melhor.estacaoMaiorCusto]);
+	idtarefa = melhor.matrizSolucao[melhor.estacaoMaiorCusto][id];
+	custo = vetTarefa[idtarefa - 1].custo;
+	verificarViabilidadeEstacoes(idtarefa - 1, melhor);
+	int estacaonova;
+	int menorCusto = penalizacao;
+	if (ultimaEstacaoInvivel == -1) {
+		estacaonova = retornaEstacaoDisponivel(idtarefa, melhor);
+		if (melhor.estacaoMaiorCusto == estacaonova - 1) {
+			parada = 1;
+		}
+	}
+	else {
+		for (int i = 0; i <= ultimaEstacaoInvivel; i++) {
+			if (melhor.vetCustoEstacao[i] <= menorCusto) {
+				menorCusto = melhor.vetCustoEstacao[i];
+				estacaonova = i;
+			}
+		}
+	}
+
+	int custoNovo = melhor.vetCustoEstacao[estacaonova] + custo;
+	int custoAntigo = melhor.Fo - custo;
+	if (custoNovo < custoAntigo) {
+		parada = 0;
+	}
+	else {
+		parada = 1;
+	}
+
+	if (parada == 0) {
+		melhor.matrizSolucao[estacaonova][melhor.vetControlaNumeroTarefa[estacaonova]] = idtarefa;
+		somarTarefaCustoEContador(melhor, estacaonova, idtarefa - 1);
+		int auxTempTarefa;
+		for (int i = id; i + 1 < melhor.vetControlaNumeroTarefa[melhor.estacaoMaiorCusto]; i++) {
+			auxTempTarefa = melhor.matrizSolucao[melhor.estacaoMaiorCusto][i + 1];
+			melhor.matrizSolucao[melhor.estacaoMaiorCusto][i] = auxTempTarefa;
+		}
+		melhor.matrizSolucao[melhor.estacaoMaiorCusto][melhor.vetControlaNumeroTarefa[melhor.estacaoMaiorCusto]] = -1;
+		subtrairTarefaCustoEContador(melhor, melhor.estacaoMaiorCusto, idtarefa - 1);
+		calculaFo(melhor);
+		gerarClone(melhor, s);
+	}
+}
+
+
+void metodoBucaLocal(solucao &s) {
 	solucao melhor;
 	int temp, flag;
 	gerarClone(s, melhor);
@@ -729,26 +809,13 @@ void metodoBuscaLocal(solucao &s) {
 		gerarClone(melhor, s);
 		// for interno tenta pegar a melhor solução da solução X
 		for (int i = 0; i < MAXGERACAO; i++) {
-			int geravizinho = rand() % (2);
-
-			switch (geravizinho) {
-			case 0:
-				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
-			case 1:
-				gerarVizinhoAleatorio(s);
-			case 2:
-				gerarVizinhoTotalmenteAleatorioViavel(s);
-
-			}
-
+			gerarVizinhoAleatorio(s);
 			if (s.Fo <= melhor.Fo) {
 				gerarClone(s, melhor);
-
 			}
-
 		}
 	}
-	calculaFo(s);
+	calculaFo(melhor);
 	gerarClone(melhor, s);
 }
 
@@ -763,16 +830,8 @@ float temperaturaInicial(solucao &s, float beta, float gama, int SAmax, int T0) 
 	while (condicao == 0) {
 		int aceitos = 0; // Número de vizinhos aceitos na temperatura T
 		for (int i = 0; i < SAmax; i++) {
-			int geravizinho = rand() % (2);
-			switch (geravizinho) {
-			case 0:
-				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
-			case 1:
-				gerarVizinhoAleatorio(s);
-			case 2:
-				gerarVizinhoTotalmenteAleatorioViavel(s);
+			gerarConstrutivaAleatoriaViavel(s);
 
-			}
 			delta = sVizinho.Fo - s.Fo;
 			if (delta < 0) {
 				aceitos = aceitos + 1;
@@ -812,22 +871,12 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
 	while (T > TC) {
 		while (iterT < SAmax) {
 			iterT = iterT + 1;
-			int geravizinho = rand() % (2);
-			switch (geravizinho) {
-			case 0:
-				gerarVizinhoMovimentoEsquerdaDireitaViavel(s);
-			case 1:
-				gerarVizinhoAleatorio(s);
-			case 2:
-				gerarVizinhoTotalmenteAleatorioViavel(s);
-
-			}
+			gerarVizinhoAleatorio(s);
 			delta = sVizinho.Fo - s.Fo;
-			if (delta < 0) {
+			if (delta <= 0) {
 				gerarClone(sVizinho, s);
-				if (sVizinho.Fo < sMelhor.Fo)
-					// gero só viaveis
-					metodoBuscaLocal(sVizinho); {
+				if (sVizinho.Fo <= sMelhor.Fo) {
+					metodoBucaLocal(sVizinho);
 					gerarClone(sVizinho, sMelhor);
 				}
 			}
@@ -843,9 +892,12 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
 		iterT = 0;
 
 		sf = clock();
+		duracao = ((sf - si) / CLOCKS_PER_SEC);
+
 	}
 	gerarClone(sMelhor, s);
 }
+
 
 int main() {
 	srand(time(0));
@@ -853,17 +905,17 @@ int main() {
 	// Solução
 	solucao s;
 	//Variaveis do SA
-	// alfa = 0.975; 
-	float alfa = 0.995;
-	//float TC = 0.01; 
-	float TC = 0.001;
-	int SAmax = 1000;
+	float alfa = 0.975;
+	//float alfa = 0.995;
+	float TC = 0.01;
+	//float TC = 0.001;
+	int SAmax = 1000000;
 	float T0 = 2; // Temperatura inicial T0 nao calibrada
 
 
 	//variaveis para calibrar T0
 	float beta = 1.1; // Taxa de aumento da temperatura T0
-	float gama = 0.95; // taxa mínima de aceitação de soluções vizinhas em porcentagem
+	float gama = 0.90; // taxa mínima de aceitação de soluções vizinhas em porcentagem
 
 
 	// Lendo as entradas
@@ -885,7 +937,8 @@ int main() {
 	cout << "Processando da Geracao Aleatoria..." << endl;
 	cout << endl;
 	cout << " ################## SOLUCAO ALETORIA ###################" << endl;
-	gerarConstrutivaAleatoria(s);
+	gerarConstrutivaAleatoriaViavel(s);
+	//gerarConstrutivaAleatoria(s);
 	ordenaSolucao(s);
 	imprimirSolucao(s);
 	gravarResultado(s);
@@ -893,10 +946,11 @@ int main() {
 	cout << "Fim do Processando da Geracao Aleatoria..." << endl;
 	cout << endl;
 
+
 	/*
 	cout << "Processando Refinamento..." << endl;
 	cout << endl;
-	metodoBuscaLocal(s);
+	metodoBucaLocal(s);
 	cout << " ################## SOLUCAO DO REFINAMENTO ###################" << endl;
 	ordenaSolucao(s);
 	imprimirSolucao(s);
@@ -905,29 +959,32 @@ int main() {
 	cout << " Fim do processando Refinamento..." << endl;
 	cout << endl;
 
-	  */
-
-	
-
-   cout << "Calibrando T0 ..." << endl;
-   cout << endl;
-   T0 = temperaturaInicial(s, beta, gama, SAmax, T0);
-   cout << "T0 = " << T0 << endl;
-   cout << endl;
-
-	 
+	//	  */
 
 
-	// /*
-   cout << "Processando SA..." << endl;
-   cout << endl;
-   simulatedAnnealing(s, alfa, TC, SAmax, T0);
-   cout << " ################## SOLUCAO DO SA ###################" << endl;
-   imprimirSolucao(s);
-   gravarResultado(s);
-   cout << endl;
-   cout << "Fim do Processamento do SA..." << endl;
-	//*/
+		  // /*
+	cout << "Calibrando T0 ..." << endl;
+	cout << endl;
+	T0 = temperaturaInicial(s, beta, gama, SAmax, T0);
+	cout << "T0 = " << T0 << endl;
+	cout << endl;
+	//  */
+
+
+	  /*
+
+
+	cout << "Processando SA..." << endl;
+	cout << endl;
+	simulatedAnnealing(s, alfa, TC, SAmax, T0);
+	cout << " ################## SOLUCAO DO SA ###################" << endl;
+	imprimirSolucao(s);
+	gravarResultado(s);
+	cout << endl;
+	cout << "Fim do Processamento do SA..." << endl;
+
+
+	// */
 	sf = clock();
 	duracao = ((sf - si) / CLOCKS_PER_SEC);
 	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
