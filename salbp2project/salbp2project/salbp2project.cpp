@@ -34,12 +34,13 @@ fixo de estações de trabalho.
 using namespace std;
 //variaveis da solucao
 #pragma warning (disable : 4996)
-#define MAXTAREFA 29
-#define MAXESTACAO 14
-#define MAXPREDECENTE 29
+#define MAXTAREFA 35
+#define MAXESTACAO 15
+#define MAXPREDECENTE 35
 #define MAXMBL 5000
-#define MAXGERACAO 1000
-#define PENALIZACAO 500
+#define MAXGERACAO 200
+#define PENALIZACAO 1000
+#define MAXMELHORA 10
 
 
 
@@ -73,11 +74,10 @@ static int controlaNUmPrecedente; // Usada na leitura dos dados
 int ultimaEstacaoInvivel;
 int totalVizinhosSA;
 int totalVizinhosSAAceitos;
-int penalizacao = 0;
 
 /* Esse metodo ler as entradas e armazana nas estruturas criadas.*/
 void lerDados() {
-	FILE* f = fopen("Data/Entradas/BUXEY.IN2", "r");
+	FILE* f = fopen("Data/Entradas/GUNTHER.IN2", "r");
 	if (f != NULL) {
 		fscanf(f, "%d", &numMaxTarefa);
 		for (int i = 0; i < numMaxTarefa; i++) {
@@ -277,6 +277,81 @@ void validaSolucao(solucao &s) {
 }
 
 
+/*Imprimo num relatorio da matriz solucao, mostrando as estações de trabalho e sua tarefas e o custo de cada estação*/
+void imprimirSolucao(solucao &s) {
+	for (int i = 0; i < MAXESTACAO; i++) {
+		cout << endl;
+		cout << endl;
+		cout << "ESTACAO DE TRABALHO " << i + 1 << " POSSUI UM CUSTO TOTAL: " << s.vetCustoEstacao[i] << endl;
+		cout << "TOTAL DE TAREFAS " << s.vetControlaNumeroTarefa[i] << endl;
+		cout << "TAREFAS: ";
+		if (s.vetControlaNumeroTarefa[i] > 0) {
+			for (int j = 0; j < s.vetControlaNumeroTarefa[i]; j++) {
+				cout << s.matrizSolucao[i][j] << " | ";
+
+			}
+
+			cout << endl;
+
+		}
+	}
+	cout << endl;
+	cout << endl;
+	cout << "FO = " << s.Fo << endl;
+	if (s.viavel == 1) {
+		cout << "SOLUCAO VIAVEL" << endl;
+	}
+	else {
+		cout << "SOLUCAO INVIAVEL" << endl;
+	}
+	cout << endl;
+
+}
+
+
+void gravarResultadoSA(solucao &s, float tempo, int rodada) {
+	FILE* f = fopen("Data/resultadoSA.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/resultadoSA.txt", "w");
+	}
+	else {
+		for (int i = 0; i < MAXESTACAO; i++) {
+			fprintf(f, "\n");
+			fprintf(f, "RODADA =  %d \n", rodada);
+			fprintf(f, "\n");
+			fprintf(f, "ESTACAO DE TRABALHO %d POSSUI UM CUSTO TOTAL: %d\n", i + 1, s.vetCustoEstacao[i]);
+			fprintf(f, "\n");
+			fprintf(f, "TOTAL DE TAREFAS: \n", s.vetControlaNumeroTarefa[i]);
+			fprintf(f, "TAREFAS: ");
+			if (s.vetControlaNumeroTarefa[i] > 0) {
+				for (int j = 0; j < s.vetControlaNumeroTarefa[i]; j++) {
+					fprintf(f, "%d", s.matrizSolucao[i][j]);
+					fprintf(f, " | ");
+
+				}
+				fprintf(f, "\n");
+
+			}
+		}
+		fprintf(f, "\n");
+		fprintf(f, "\n");
+		fprintf(f, "FO = %d", s.Fo);
+		fprintf(f, "\n");
+		if (s.viavel == 1) {
+			fprintf(f, "SOLUÇÃO VIAVEL");
+		}
+		else {
+			fprintf(f, "SOLUÇÃO INVIAVEL");
+		}
+		fprintf(f, "\n");
+		fprintf(f, "\n");
+		fprintf(f, "TEMPO SEM SEGUNDOS %f \n", tempo);
+		fclose(f);
+	}
+}
+
+
+
 void penalizaSolucao(solucao &s) {
 	if (s.viavel == 0) {
 		s.Fo = s.Fo + PENALIZACAO;
@@ -396,83 +471,6 @@ void gerarConstrutivaAleatoria(solucao &s) {
 		s.vetCustoEstacao[idEstacao] = s.vetCustoEstacao[idEstacao] + vetTarefa[i].custo;
 	}
 	calculaFo(s);
-
-}
-
-
-
-
-
-
-/*Imprimo num relatorio da matriz solucao, mostrando as estações de trabalho e sua tarefas e o custo de cada estação*/
-void imprimirSolucao(solucao &s) {
-	for (int i = 0; i < MAXESTACAO; i++) {
-		cout << endl;
-		cout << endl;
-		cout << "ESTACAO DE TRABALHO " << i + 1 << " POSSUI UM CUSTO TOTAL: " << s.vetCustoEstacao[i] << endl;
-		cout << "TOTAL DE TAREFAS " << s.vetControlaNumeroTarefa[i] << endl;
-		cout << "TAREFAS: ";
-		if (s.vetControlaNumeroTarefa[i] > 0) {
-			for (int j = 0; j < s.vetControlaNumeroTarefa[i]; j++) {
-				cout << s.matrizSolucao[i][j] << " | ";
-
-			}
-
-			cout << endl;
-
-		}
-	}
-	cout << endl;
-	cout << endl;
-	cout << "FO = " << s.Fo << endl;
-	if (s.viavel == 1) {
-		cout << "SOLUCAO VIAVEL" << endl;
-	}
-	else {
-		cout << "SOLUCAO INVIAVEL" << endl;
-	}
-	cout << endl;
-
-}
-
-
-void gravarResultado(solucao &s) {
-	FILE* f = fopen("Data/Resultado.txt", "a");
-	if (f == NULL) {
-		f = fopen("Data/Resultado.txt", "w");
-	}
-	else {
-		for (int i = 0; i < MAXESTACAO; i++) {
-			fprintf(f, "\n");
-			fprintf(f, "\n");
-			fprintf(f, "ESTACAO DE TRABALHO %d POSSUI UM CUSTO TOTAL: %d\n", i + 1, s.vetCustoEstacao[i]);
-			fprintf(f, "\n");
-			fprintf(f, "TOTAL DE TAREFAS: \n", s.vetControlaNumeroTarefa[i]);
-			fprintf(f, "TAREFAS: ");
-			if (s.vetControlaNumeroTarefa[i] > 0) {
-				for (int j = 0; j < s.vetControlaNumeroTarefa[i]; j++) {
-					fprintf(f, "%d", s.matrizSolucao[i][j]);
-					fprintf(f, " | ");
-
-				}
-				fprintf(f, "\n");
-
-			}
-		}
-		fprintf(f, "\n");
-		fprintf(f, "\n");
-		fprintf(f, "FO = %d", s.Fo);
-		fprintf(f, "\n");
-		if (s.viavel == 1) {
-			fprintf(f, "SOLUÇÃO VIAVEL");
-		}
-		else {
-			fprintf(f, "SOLUÇÃO INVIAVEL");
-		}
-		fprintf(f, "\n");
-		fprintf(f, "\n");
-		fclose(f);
-	}
 
 }
 
@@ -746,7 +744,7 @@ int retornaEstacaoDisponivel(int idTarefa, solucao &s) {
 	return retorno;
 }
 
-
+/*
 void movimentoGuloso(solucao &s) {
 	Solucao melhor;
 	gerarClone(s, melhor);
@@ -797,7 +795,7 @@ void movimentoGuloso(solucao &s) {
 		calculaFo(melhor);
 		gerarClone(melhor, s);
 	}
-}
+}*/
 
 
 void metodoBucaLocal(solucao &s) {
@@ -819,6 +817,23 @@ void metodoBucaLocal(solucao &s) {
 	gerarClone(melhor, s);
 }
 
+void metodoMelhorBuscalLocal(solucao &s) {
+	Solucao melhor;
+	gerarClone(s, melhor);
+	for (int i = 1; i < MAXMELHORA; i++) {
+		metodoBucaLocal(melhor);
+		if (melhor.Fo < s.Fo) {
+			gerarClone(melhor, s);
+
+		}
+		fflush(stdin);
+	}
+	fflush(stdin);
+}
+
+
+
+
 float temperaturaInicial(solucao &s, float beta, float gama, int SAmax, int T0) {
 	Solucao sVizinho;
 	float T = T0; // Temperatura Corrente
@@ -830,7 +845,7 @@ float temperaturaInicial(solucao &s, float beta, float gama, int SAmax, int T0) 
 	while (condicao == 0) {
 		int aceitos = 0; // Número de vizinhos aceitos na temperatura T
 		for (int i = 0; i < SAmax; i++) {
-			gerarConstrutivaAleatoriaViavel(s);
+			gerarVizinhoAleatorio(s);
 
 			delta = sVizinho.Fo - s.Fo;
 			if (delta < 0) {
@@ -856,27 +871,117 @@ float temperaturaInicial(solucao &s, float beta, float gama, int SAmax, int T0) 
 	return T0;
 }
 
+void melhorasSA(int fo, float T, int iterT) {
+	FILE* f = fopen("Data/melhorasSA.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/melhorasSA.txt", "w");
+	}
+	else {
+		fprintf(f, "\n");
+		fprintf(f, " Melhor FO =  %d \n", fo);
+		fprintf(f, "Temperatura =  %d \n", T);
+		fprintf(f, "Iteracao =  %d \n", iterT);
+		fprintf(f, "\n");
+		fclose(f);
+
+	}
+}
+
+void melhorasBMLSA(int fo, float T, int iterT) {
+	FILE* f = fopen("Data/melhorasBMLSA.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/melhorasBMLSA.txt", "w");
+	}
+	else {
+		fprintf(f, "\n");
+		fprintf(f, " Melhor FO =  %d \n", fo);
+		fprintf(f, "Temperatura =  %d \n", T);
+		fprintf(f, "Iteracao =  %d \n", iterT);
+		fprintf(f, "\n");
+		fclose(f);
+
+	}
+}
+
+void piorasSA(int fo, float T, int iterT) {
+	FILE* f = fopen("Data/piorasSA.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/piorasSA.txt", "w");
+	}
+	else {
+		fprintf(f, "\n");
+		fprintf(f, " Melhor FO =  %d \n", fo);
+		fprintf(f, "Temperatura =  %d \n", T);
+		fprintf(f, "Iteracao =  %d \n", iterT);
+		fprintf(f, "\n");
+		fclose(f);
+
+	}
+}
 
 
+/*
 void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
-	Solucao sMelhor, sVizinho;
+	Solucao sMelhor, sVizinho, sVizinhoMelhor;
 	int iterT = 0;
 	float T = T0;
 	int delta = 0;
 	gerarClone(s, sMelhor);
-	gerarClone(s, sVizinho);
-	float duracao = 0;
-	clock_t si, sf;
-	si = clock();
 	while (T > TC) {
 		while (iterT < SAmax) {
 			iterT = iterT + 1;
-			gerarVizinhoAleatorio(s);
+			gerarClone(s, sVizinho);
+			gerarVizinhoAleatorio(sVizinho);
 			delta = sVizinho.Fo - s.Fo;
 			if (delta <= 0) {
 				gerarClone(sVizinho, s);
 				if (sVizinho.Fo <= sMelhor.Fo) {
-					metodoBucaLocal(sVizinho);
+					gerarClone(sVizinho, sVizinhoMelhor);
+					metodoMelhorBuscalLocal(sVizinhoMelhor);
+					if (sVizinhoMelhor.Fo <= sMelhor.Fo) {
+						gerarClone(sVizinhoMelhor, sMelhor);
+						melhorasBMLSA(sMelhor.Fo, T, iterT);
+					}
+					else {
+						gerarClone(sVizinho, sMelhor);
+						melhorasSA(sMelhor.Fo, T, iterT);
+					}
+				}
+			}
+			else {
+				float x = rand() % 1001;
+				x = x / 999;
+				if (x < exp(-delta / T)) {
+					gerarClone(sVizinho, s);
+					piorasSA(s.Fo, T, iterT);
+				}
+			}
+		}
+		T = alfa * T;
+		iterT = 0;
+
+	}
+	gerarClone(sMelhor, s);
+}
+
+*/
+
+void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
+	Solucao sMelhor, sVizinho, sVizinhoMelhor;
+	int iterT = 0;
+	float T = T0;
+	int delta = 0;
+	gerarClone(s, sMelhor);
+	while (T > TC) {
+		while (iterT < SAmax) {
+			iterT = iterT + 1;
+			gerarClone(s, sVizinho);// Gero um Vizinho de S
+			gerarVizinhoMovimentoEsquerdaDireitaViavel(sVizinho); // Gero um Vizinho de S'
+			delta = sVizinho.Fo - s.Fo;
+			if (delta <= 0) {
+				gerarClone(sVizinho, s);
+				if (sVizinho.Fo <= sMelhor.Fo) {
+					metodoMelhorBuscalLocal(sVizinho);
 					gerarClone(sVizinho, sMelhor);
 				}
 			}
@@ -885,37 +990,129 @@ void simulatedAnnealing(solucao &s, float alfa, float TC, int SAmax, float T0) {
 				x = x / 999;
 				if (x < exp(-delta / T)) {
 					gerarClone(sVizinho, s);
+					piorasSA(s.Fo, T, iterT);
 				}
 			}
 		}
 		T = alfa * T;
 		iterT = 0;
 
-		sf = clock();
-		duracao = ((sf - si) / CLOCKS_PER_SEC);
-
 	}
 	gerarClone(sMelhor, s);
 }
 
 
+void gravarParametros(solucao &s, float tempo, int rodada) {
+	FILE* f = fopen("Data/infoParametrosGlobais.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/infoParametrosGlobais.txt", "w");
+	}
+	else {
+		fprintf(f, "PARAMETROS DO REFINAMENTO\n");
+		fprintf(f, "RODADA =  %d \n", rodada);
+		fprintf(f, "FO =  %d \n", s.Fo);
+		fprintf(f, "MAXMBL =  %d\n", MAXMBL);
+		fprintf(f, "MAXGERACAO =  %d \n", MAXGERACAO);
+		fprintf(f, "PENALIZACAO =  %d \n", PENALIZACAO);
+		fprintf(f, "MAXMELHORA =  %d \n", MAXMELHORA);
+		fprintf(f, "MAXESTACAO =  %d \n", MAXESTACAO);
+		fprintf(f, "MAXTAREFA =  %d \n", MAXTAREFA);
+		fprintf(f, "TEMPO SEM SEGUNDOS %f \n", tempo);
+		fprintf(f, "\n");
+		fclose(f);
+
+	}
+}
+
+
+void gravarParametrosSA(int Fo, float tempo, float alfa, float TC, int SAmax, float T0, int rodada) {
+	FILE* f = fopen("Data/infoParametrosSA.txt", "a");
+	if (f == NULL) {
+		f = fopen("Data/infoParametrosSA.txt", "w");
+	}
+	else {
+		fprintf(f, "\n");
+		fprintf(f, "PARAMETROS DO SA\n");
+		fprintf(f, "RODADA =  %d \n", rodada);
+		fprintf(f, "FO =  %d \n", Fo);
+		fprintf(f, "MAXMBL =  %d\n", MAXMBL);
+		fprintf(f, "MAXGERACAO =  %d \n", MAXGERACAO);
+		fprintf(f, "PENALIZACAO =  %d \n", PENALIZACAO);
+		fprintf(f, "MAXMELHORA =  %d \n", MAXMELHORA);
+		fprintf(f, "MAXESTACAO =  %d \n", MAXESTACAO);
+		fprintf(f, "MAXTAREFA =  %d \n", MAXTAREFA);
+		fprintf(f, "alfa =  %f \n", alfa);
+		fprintf(f, "TC =  %f \n", TC);
+		fprintf(f, "SAmax =  %d \n", SAmax);
+		fprintf(f, "T0 =  %f \n", T0);
+		fprintf(f, "TEMPO SEM SEGUNDOS %f \n", tempo);
+		fprintf(f, "\n");
+		fclose(f);
+
+	}
+}
+
+
+void limparResultado() {
+	FILE* f = fopen("Data/resultadoSA.txt", "w");
+	fclose(f);
+}
+void limparResultadoSA() {
+	FILE* f = fopen("Data/resultadoSA.txt", "w");
+	fclose(f);
+}
+
+void limparInfoParametrosSA() {
+	FILE* f = fopen("Data/infoParametrosSA.txt", "w");
+	fclose(f);
+}
+
+void limparInfoParametrosGlobais() {
+	FILE* f = fopen("Data/infoParametrosGlobais.txt", "w");
+	fclose(f);
+}
+
+
+
+
+void limparPiorasSAA() {
+	FILE* f = fopen("Data/piorasSA.txt", "w");
+	fclose(f);
+}
+
+void limparMelhorasSA() {
+	FILE* f = fopen("Data/melhorasSA.txt", "w");
+	fclose(f);
+}
+
+void limparMelhorasBMLSA() {
+	FILE* f = fopen("Data/melhorasBMLSA.txt", "w");
+	fclose(f);
+}
+
 int main() {
 	srand(time(0));
+	//limparMelhorasBMLSA();
+	//limparMelhorasSA();
+	//limparPiorasSAA();
+	limparInfoParametrosSA();
+	limparInfoParametrosGlobais();
+	limparResultadoSA();
 
 	// Solução
 	solucao s;
 	//Variaveis do SA
 	float alfa = 0.975;
 	//float alfa = 0.995;
-	float TC = 0.01;
-	//float TC = 0.001;
-	int SAmax = 1000000;
-	float T0 = 2; // Temperatura inicial T0 nao calibrada
+	//float TC = 0.01;
+	float TC = 0.001;
+	int SAmax = 1000;
+	float T0 = 20000; // Temperatura inicial T0 nao calibrada
 
 
 	//variaveis para calibrar T0
-	float beta = 1.1; // Taxa de aumento da temperatura T0
-	float gama = 0.90; // taxa mínima de aceitação de soluções vizinhas em porcentagem
+	//float beta = 1.1; // Taxa de aumento da temperatura T0
+	//float gama = 0.90; // taxa mínima de aceitação de soluções vizinhas em porcentagem
 
 
 	// Lendo as entradas
@@ -925,32 +1122,15 @@ int main() {
 	// Normaliza as soluções para serem geradas
 	sanitizarMatrizSolucao(s);
 	//Imprimi no console informações das tarefas
-	infoDadosTarefas();
+	//infoDadosTarefas();
 	//Grava em txt informações das tarefas
 	gravarInfoDadosTarefas();
 	// variaveis de tempo
-	float duracao = 0;
-	clock_t si, sf;
-	si = clock();
-
-
-	cout << "Processando da Geracao Aleatoria..." << endl;
-	cout << endl;
-	cout << " ################## SOLUCAO ALETORIA ###################" << endl;
-	gerarConstrutivaAleatoriaViavel(s);
-	//gerarConstrutivaAleatoria(s);
-	ordenaSolucao(s);
-	imprimirSolucao(s);
-	gravarResultado(s);
-	cout << endl;
-	cout << "Fim do Processando da Geracao Aleatoria..." << endl;
-	cout << endl;
-
 
 	/*
 	cout << "Processando Refinamento..." << endl;
 	cout << endl;
-	metodoBucaLocal(s);
+	metodoMelhorBuscalLocal(s);
 	cout << " ################## SOLUCAO DO REFINAMENTO ###################" << endl;
 	ordenaSolucao(s);
 	imprimirSolucao(s);
@@ -961,33 +1141,40 @@ int main() {
 
 	//	  */
 
+	float duracao = 0;
+	clock_t si, sf;
+	///*
+	for (int i = 1;i <= 3; i++) {
+		// Normaliza as soluções para serem geradas
+		sanitizarMatrizSolucao(s);
 
-		  // /*
-	cout << "Calibrando T0 ..." << endl;
-	cout << endl;
-	T0 = temperaturaInicial(s, beta, gama, SAmax, T0);
-	cout << "T0 = " << T0 << endl;
-	cout << endl;
-	//  */
-
-
-	  /*
-
-
-	cout << "Processando SA..." << endl;
-	cout << endl;
-	simulatedAnnealing(s, alfa, TC, SAmax, T0);
-	cout << " ################## SOLUCAO DO SA ###################" << endl;
-	imprimirSolucao(s);
-	gravarResultado(s);
-	cout << endl;
-	cout << "Fim do Processamento do SA..." << endl;
+		cout << "Processando Geracao Aleatoria..." << endl;
+		cout << endl;
+		//cout << " ################## SOLUCAO ALETORIA ###################" << endl;
+		gerarConstrutivaAleatoriaViavel(s);
+		ordenaSolucao(s);
+		//imprimirSolucao(s);
+		cout << "Fim do Processando da Geracao Aleatoria..." << endl;
+		cout << endl;
 
 
-	// */
-	sf = clock();
-	duracao = ((sf - si) / CLOCKS_PER_SEC);
-	cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
+
+		cout << "Processando SA..." << endl;
+		cout << endl;
+		si = clock();
+		simulatedAnnealing(s, alfa, TC, SAmax, T0);
+		sf = clock();
+		duracao = ((sf - si) / CLOCKS_PER_SEC);
+		//cout << " ################## SOLUCAO DO SA ###################" << endl;
+		ordenaSolucao(s);
+		//imprimirSolucao(s);
+		gravarResultadoSA(s, duracao,i);
+		cout << "Fim do Processamento do SA..." << endl;
+		cout << endl;
+		cout << "TEMPO  " << duracao << " SEGUNDOS. " << endl;
+		gravarParametrosSA(s.Fo, duracao, alfa, TC, SAmax, T0,i);
+		gravarParametros(s, duracao,i);
+	}
 	system("pause");
 	return 0;
 }
