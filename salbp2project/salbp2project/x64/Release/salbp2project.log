@@ -1,0 +1,20 @@
+﻿  salbp2project.cpp
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(54): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(55): warning C4305: 'inicializando': truncamento de 'double' para 'float'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(341): warning C4474: 'fprintf': excesso de argumentos transmitidos para cadeia de caracteres de formato
+  c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(341): note: espaços reservados e seus parâmetros esperam 0 argumentos variadic, mas 1 foram fornecidos
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(821): warning C4101: 'temp': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(821): warning C4101: 'flag': variável local não referenciada
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(870): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(897): warning C4477: 'fprintf': a cadeia de formato '%d' requer um argumento do tipo 'int', mas um argumento variadic 1 tem o tipo 'double'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(913): warning C4477: 'fprintf': a cadeia de formato '%d' requer um argumento do tipo 'int', mas um argumento variadic 1 tem o tipo 'double'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(929): warning C4477: 'fprintf': a cadeia de formato '%d' requer um argumento do tipo 'int', mas um argumento variadic 1 tem o tipo 'double'
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(1066): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(1146): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+c:\users\joaov\documents\projetos\salbp2\salbp2project\salbp2project\salbp2project.cpp(1167): warning C4244: '=': conversão de 'clock_t' para 'float', possível perda de dados
+  Gerando código
+  5 of 60 functions ( 8.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finalizada a geração de código
+  salbp2project.vcxproj -> C:\Users\joaov\Documents\Projetos\salbp2\salbp2project\x64\Release\salbp2project.exe

@@ -1,90 +1,144 @@
 
 ##################################### NUMERO MAXIMO DE POSTOS #####################################
-						 15
+						 3
 ##################################### NUMERO MAXIMO DE TAREFAS #####################################
-						 35
+						 53
 ##################################### CUSTO DAS TAREFAS #####################################
-					 tarefa 1 = 29
-					 tarefa 2 = 3
-					 tarefa 3 = 5
-					 tarefa 4 = 22
-					 tarefa 5 = 6
-					 tarefa 6 = 14
-					 tarefa 7 = 2
-					 tarefa 8 = 5
-					 tarefa 9 = 22
-					 tarefa 10 = 30
-					 tarefa 11 = 23
-					 tarefa 12 = 30
-					 tarefa 13 = 23
-					 tarefa 14 = 2
-					 tarefa 15 = 19
-					 tarefa 16 = 29
-					 tarefa 17 = 2
-					 tarefa 18 = 2
-					 tarefa 19 = 19
-					 tarefa 20 = 29
-					 tarefa 21 = 6
-					 tarefa 22 = 10
-					 tarefa 23 = 16
-					 tarefa 24 = 23
-					 tarefa 25 = 5
-					 tarefa 26 = 5
-					 tarefa 27 = 5
-					 tarefa 28 = 40
-					 tarefa 29 = 2
-					 tarefa 30 = 5
-					 tarefa 31 = 5
-					 tarefa 32 = 1
-					 tarefa 33 = 40
-					 tarefa 34 = 2
-					 tarefa 35 = 2
+					 tarefa 1 = 971
+					 tarefa 2 = 142
+					 tarefa 3 = 142
+					 tarefa 4 = 142
+					 tarefa 5 = 103
+					 tarefa 6 = 96
+					 tarefa 7 = 99
+					 tarefa 8 = 1207
+					 tarefa 9 = 160
+					 tarefa 10 = 180
+					 tarefa 11 = 82
+					 tarefa 12 = 60
+					 tarefa 13 = 112
+					 tarefa 14 = 420
+					 tarefa 15 = 1556
+					 tarefa 16 = 236
+					 tarefa 17 = 259
+					 tarefa 18 = 125
+					 tarefa 19 = 601
+					 tarefa 20 = 80
+					 tarefa 21 = 80
+					 tarefa 22 = 70
+					 tarefa 23 = 89
+					 tarefa 24 = 89
+					 tarefa 25 = 105
+					 tarefa 26 = 330
+					 tarefa 27 = 132
+					 tarefa 28 = 69
+					 tarefa 29 = 99
+					 tarefa 30 = 70
+					 tarefa 31 = 70
+					 tarefa 32 = 158
+					 tarefa 33 = 191
+					 tarefa 34 = 70
+					 tarefa 35 = 53
+					 tarefa 36 = 50
+					 tarefa 37 = 125
+					 tarefa 38 = 353
+					 tarefa 39 = 70
+					 tarefa 40 = 128
+					 tarefa 41 = 65
+					 tarefa 42 = 1775
+					 tarefa 43 = 91
+					 tarefa 44 = 91
+					 tarefa 45 = 113
+					 tarefa 46 = 487
+					 tarefa 47 = 138
+					 tarefa 48 = 80
+					 tarefa 49 = 80
+					 tarefa 50 = 65
+					 tarefa 51 = 40
+					 tarefa 52 = 742
+					 tarefa 53 = 1085
 
-##################################### CUSTO TOTAL: 483 #####################################
+##################################### CUSTO TOTAL: 14026 #####################################
 
 ##################################### PREDECEDENTES #####################################
 				Tarefa = 2 -  Predecessor = 1 
-				Tarefa = 3 -  Predecessor = 2 
-				Tarefa = 4 -  Predecessor = 3 
+				Tarefa = 3 -  Predecessor = 1 
+				Tarefa = 4 -  Predecessor = 1 
 				Tarefa = 5 -  Predecessor = 1 
-				Tarefa = 6 -  Predecessor = 5 
+				Tarefa = 6 -  Predecessor = 1 
 				Tarefa = 7 -  Predecessor = 1 
-				Tarefa = 7 -  Predecessor = 6 
-				Tarefa = 8 -  Predecessor = 6 
+				Tarefa = 9 -  Predecessor = 4 
+				Tarefa = 9 -  Predecessor = 5 
+				Tarefa = 9 -  Predecessor = 6 
+				Tarefa = 9 -  Predecessor = 7 
 				Tarefa = 9 -  Predecessor = 8 
-				Tarefa = 10 -  Predecessor = 1 
-				Tarefa = 11 -  Predecessor = 4 
-				Tarefa = 12 -  Predecessor = 1 
-				Tarefa = 13 -  Predecessor = 9 
-				Tarefa = 14 -  Predecessor = 7 
-				Tarefa = 14 -  Predecessor = 10 
-				Tarefa = 15 -  Predecessor = 14 
+				Tarefa = 10 -  Predecessor = 9 
+				Tarefa = 11 -  Predecessor = 10 
+				Tarefa = 12 -  Predecessor = 11 
+				Tarefa = 13 -  Predecessor = 12 
+				Tarefa = 14 -  Predecessor = 12 
+				Tarefa = 15 -  Predecessor = 12 
+				Tarefa = 16 -  Predecessor = 13 
 				Tarefa = 16 -  Predecessor = 15 
-				Tarefa = 18 -  Predecessor = 7 
-				Tarefa = 18 -  Predecessor = 12 
-				Tarefa = 19 -  Predecessor = 18 
-				Tarefa = 20 -  Predecessor = 17 
+				Tarefa = 17 -  Predecessor = 13 
+				Tarefa = 17 -  Predecessor = 15 
+				Tarefa = 18 -  Predecessor = 13 
+				Tarefa = 19 -  Predecessor = 17 
 				Tarefa = 20 -  Predecessor = 19 
-				Tarefa = 21 -  Predecessor = 16 
-				Tarefa = 21 -  Predecessor = 20 
-				Tarefa = 22 -  Predecessor = 21 
-				Tarefa = 23 -  Predecessor = 22 
-				Tarefa = 24 -  Predecessor = 23 
-				Tarefa = 25 -  Predecessor = 21 
+				Tarefa = 21 -  Predecessor = 19 
+				Tarefa = 22 -  Predecessor = 14 
+				Tarefa = 22 -  Predecessor = 19 
+				Tarefa = 23 -  Predecessor = 20 
+				Tarefa = 24 -  Predecessor = 21 
+				Tarefa = 25 -  Predecessor = 22 
 				Tarefa = 26 -  Predecessor = 25 
-				Tarefa = 27 -  Predecessor = 24 
 				Tarefa = 27 -  Predecessor = 26 
-				Tarefa = 28 -  Predecessor = 11 
-				Tarefa = 28 -  Predecessor = 13 
 				Tarefa = 28 -  Predecessor = 27 
+				Tarefa = 29 -  Predecessor = 16 
 				Tarefa = 29 -  Predecessor = 28 
-				Tarefa = 30 -  Predecessor = 21 
-				Tarefa = 31 -  Predecessor = 30 
-				Tarefa = 32 -  Predecessor = 21 
-				Tarefa = 32 -  Predecessor = 31 
-				Tarefa = 33 -  Predecessor = 11 
-				Tarefa = 33 -  Predecessor = 13 
-				Tarefa = 33 -  Predecessor = 27 
-				Tarefa = 33 -  Predecessor = 32 
-				Tarefa = 34 -  Predecessor = 27 
+				Tarefa = 30 -  Predecessor = 16 
+				Tarefa = 30 -  Predecessor = 28 
+				Tarefa = 31 -  Predecessor = 16 
+				Tarefa = 31 -  Predecessor = 28 
+				Tarefa = 32 -  Predecessor = 28 
+				Tarefa = 33 -  Predecessor = 28 
+				Tarefa = 34 -  Predecessor = 28 
+				Tarefa = 35 -  Predecessor = 29 
+				Tarefa = 35 -  Predecessor = 30 
+				Tarefa = 35 -  Predecessor = 31 
+				Tarefa = 35 -  Predecessor = 32 
 				Tarefa = 35 -  Predecessor = 33 
+				Tarefa = 35 -  Predecessor = 34 
+				Tarefa = 36 -  Predecessor = 2 
+				Tarefa = 36 -  Predecessor = 3 
+				Tarefa = 36 -  Predecessor = 23 
+				Tarefa = 36 -  Predecessor = 24 
+				Tarefa = 37 -  Predecessor = 36 
+				Tarefa = 38 -  Predecessor = 37 
+				Tarefa = 39 -  Predecessor = 37 
+				Tarefa = 40 -  Predecessor = 37 
+				Tarefa = 41 -  Predecessor = 38 
+				Tarefa = 41 -  Predecessor = 39 
+				Tarefa = 41 -  Predecessor = 40 
+				Tarefa = 42 -  Predecessor = 18 
+				Tarefa = 42 -  Predecessor = 41 
+				Tarefa = 43 -  Predecessor = 42 
+				Tarefa = 44 -  Predecessor = 42 
+				Tarefa = 45 -  Predecessor = 42 
+				Tarefa = 46 -  Predecessor = 42 
+				Tarefa = 47 -  Predecessor = 42 
+				Tarefa = 48 -  Predecessor = 43 
+				Tarefa = 49 -  Predecessor = 44 
+				Tarefa = 50 -  Predecessor = 46 
+				Tarefa = 51 -  Predecessor = 45 
+				Tarefa = 51 -  Predecessor = 47 
+				Tarefa = 51 -  Predecessor = 48 
+				Tarefa = 51 -  Predecessor = 49 
+				Tarefa = 51 -  Predecessor = 50 
+				Tarefa = 52 -  Predecessor = 45 
+				Tarefa = 52 -  Predecessor = 47 
+				Tarefa = 52 -  Predecessor = 48 
+				Tarefa = 52 -  Predecessor = 49 
+				Tarefa = 52 -  Predecessor = 50 
+				Tarefa = 53 -  Predecessor = 51 
+				Tarefa = 53 -  Predecessor = 52 
