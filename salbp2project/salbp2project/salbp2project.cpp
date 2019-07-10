@@ -45,7 +45,6 @@ using namespace std;
 #define MAXRODADA 10
 #define RODADA 1
 #define PENALIZACAO 10000
-#define OTIMOABSOLUTO 403
 #define LIMPEZA 1 // 1 limpara os arquivos 
 #define IMPRIMIRCONSOLE 0 //1 imprimi a solução no console
 #define INFOCONSOLE 0 // 1 imprimi a solução no console
@@ -303,14 +302,6 @@ void validaSolucao(solucao &s) {
 
 
 void penalizaSolucao(solucao &s) {
-	if (s.Fo < OTIMOABSOLUTO) {
-		s.viavel = 0;
-		viavel = 0;
-	}
-
-	if (s.Fo == OTIMOABSOLUTO) {
-		validaSolucao(s);
-	}
 
 	if (viavel == 0) {
 		s.Fo = s.Fo + PENALIZACAO;
