@@ -1,7 +1,3 @@
-// salbp2project.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
-//
-
-
 // SALBP2.cpp : define o ponto de entrada para o aplicativo do console.
 
 /*
